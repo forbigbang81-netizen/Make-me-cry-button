@@ -167,12 +167,12 @@
     <div class="container">
         <div id="anime-card" class="anime-card" onclick="openSubpage()">
             <div class="poster-frame">
-                <img src="https://cdn.myanimelist.net/images/anime/1811/128330.jpg" alt="Cyberpunk Edgerunners">
+                <img src="https://images.weserv.nl/?url=https://cdn.myanimelist.net/images/anime/1811/128330.jpg" alt="Cyberpunk Edgerunners">
             </div>
             <div class="card-info">
                 <div>
                     <h2 class="anime-title">Cyberpunk Edgerunners</h2>
-                    <p class="synopsis-preview">A street kid trying to survive in a technology and body modification-obsessed city of the future. Having everything to lose, he chooses to stay alive by becoming an edgerunner...</p>
+                    <p class="synopsis-preview">A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future. Having everything to lose, he stays alive by becoming an edgerunner: a mercenary outlaw also known as a cyberpunk.</p>
                 </div>
                 <div class="action-hint">Click to view page →</div>
             </div>
@@ -211,7 +211,7 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            // Custom embedded parameters to remove YouTube clutter completely
+            // Custom embedded parameters to strip out all player borders and branding elements
             document.getElementById('video-target').innerHTML = `
                 <iframe 
                     src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" 
