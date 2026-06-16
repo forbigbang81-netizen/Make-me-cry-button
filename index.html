@@ -67,19 +67,12 @@
         .card-info {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         .anime-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .synopsis-preview {
-            color: #aaaaaa;
-            font-size: 1rem;
-            line-height: 1.5;
         }
 
         .action-hint {
@@ -149,6 +142,7 @@
             margin: 40px auto 0 auto;
             padding-top: 56.25%; /* 16:9 Aspect Ratio */
             background: #000000;
+            overflow: hidden;
         }
 
         .video-container iframe {
@@ -158,6 +152,17 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* Invisible layer that intercepts mobile touch inputs to block YouTube's native UI popups */
+        .player-shield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
         }
 
         @media (max-width: 600px) {
@@ -179,10 +184,7 @@
                 <img id="api-image" src="" alt="Cyberpunk Edgerunners">
             </div>
             <div class="card-info">
-                <div>
-                    <h2 class="anime-title">Cyberpunk Edgerunners</h2>
-                    <p class="synopsis-preview" id="api-synopsis"></p>
-                </div>
+                <h2 class="anime-title">Cyberpunk Edgerunners</h2>
                 <div class="action-hint">Click to view page →</div>
             </div>
         </div>
@@ -197,6 +199,7 @@
             <button id="cry-action-btn" class="cry-btn" onclick="playCleanVideo()">Make Me Cry</button>
             
             <div id="player-wrapper" class="video-container">
+                <div class="player-shield"></div>
                 <div id="video-target"></div>
             </div>
         </div>
@@ -209,7 +212,7 @@
             fetchAnimeData();
         });
 
-        // Pulls directly via Kitsu open API using strict slug querying to ensure 100% accuracy
+        // Pulls exclusively through Kitsu Open API for the artwork asset sequence
         async function fetchAnimeData() {
             try {
                 const response = await fetch('https://kitsu.io/api/edge/anime?filter[slug]=cyberpunk-edgerunners');
@@ -218,10 +221,10 @@
                 const json = await response.json();
                 const anime = json.data[0].attributes;
 
-                // Bind safe open-origin image asset fields and descriptions
+                // Set the poster image source
                 document.getElementById('api-image').src = anime.posterImage.medium;
-                document.getElementById('api-synopsis').innerText = anime.synopsis.substring(0, 220) + "...";
                 
+                // Hide loading message and reveal the clean card structure
                 document.getElementById('loading-panel').style.display = 'none';
                 document.getElementById('anime-card').style.display = 'flex';
             } catch (err) {
@@ -245,10 +248,10 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            // Custom player flags strip away title headers, options, bars, and suggestions
+            // Custom parameter flags to disable standard player chrome, info text, and pause panels
             document.getElementById('video-target').innerHTML = `
                 <iframe 
-                    src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" 
+                    src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>
