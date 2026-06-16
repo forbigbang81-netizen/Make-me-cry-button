@@ -79,7 +79,7 @@
                 <div class="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-magenta-500 translate-x-[-2px] translate-y-[2px]"></div>
 
                 <div class="w-full aspect-[16/10] mb-4 overflow-hidden border border-gray-800 bg-gray-900/40 relative">
-                    <img id="apiCover" class="w-full h-full object-cover filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-700" src="https://i.pinimg.com/736x/7h/Iy/0o/7hIy0o7es.jpg" alt="Edgerunners Core Intel" onerror="this.src='https://images.alphacoders.com/126/1263595.jpg'">
+                    <img id="apiCover" class="w-full h-full object-cover filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-700" src="https://images.alphacoders.com/126/1263595.jpg" alt="Edgerunners Core Intel">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
 
@@ -182,9 +182,9 @@
 
         let player = null;
         const targetVideoId = 'KvMY1uzSC1E';
-        const cyberpunkMalId = 51352; // MyAnimeList Index ID mapping for Cyberpunk: Edgerunners
+        const cyberpunkMalId = 51352; 
 
-        // Fetch fallback info updates via Public Jikan API Ecosystem while holding custom image override
+        // Fetch meta values through Jikan ecosystem to ensure live data parsing
         document.addEventListener("DOMContentLoaded", () => {
             fetch(`https://api.jikan.moe/v4/anime/${cyberpunkMalId}`)
                 .then(response => response.json())
@@ -197,14 +197,14 @@
                         document.getElementById('apiStatus').innerText = `STATUS: ${info.status.toUpperCase()}`;
                     }
                 })
-                .catch(err => console.log("API feed bypassed. Utilizing preset data layer mappings.", err));
+                .catch(err => console.log("Reverting to system cache layer.", err));
         });
 
         function onYouTubeIframeAPIReady() {
             console.log("YouTube Stream Core Module Ready.");
         }
 
-        // Handle routing view context animations
+        // Handle routing transitions
         function navigateToPlayer() {
             const home = document.getElementById('homePage');
             const playerMain = document.getElementById('playerPage');
@@ -249,7 +249,7 @@
             player = new YT.Player('ytPlayerTarget', {
                 videoId: targetVideoId,
                 playerVars: {
-                    'autoplay': 1, // Auto play stream tracking directives verified on execution event initialization
+                    'autoplay': 1,
                     'modestbranding': 1,
                     'rel': 0,
                     'controls': 1
