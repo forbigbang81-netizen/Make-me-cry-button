@@ -133,28 +133,36 @@
             opacity: 0.9;
         }
 
-        /* Frameless Video Cropping Window */
+        /* Standard 1:1 Scale Framing Layout */
         .video-window-wrapper {
             display: none;
             position: relative;
             width: 100%;
             max-width: 800px;
             margin: 40px auto 0 auto;
-            padding-top: 56.25%; /* 16:9 Screen Ratio */
+            padding-top: 56.25%; /* Perfect 16:9 Aspect Ratio */
             background: #000000;
-            overflow: hidden; /* Cuts off the stretched video edges completely */
             border-radius: 6px;
+            overflow: hidden;
         }
 
-        /* Stretches the frame outward to hide native YouTube UI wrappers */
+        /* Clean un-zoomed sizing matrix */
         .video-window-wrapper iframe {
             position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
-            pointer-events: none; /* Stops tap gestures from opening YouTube menus on mobile screens */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
+            pointer-events: none; /* Blocks accidental mobile click overlays */
+        }
+
+        @media (max-width: 600px) {
+            .anime-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -192,7 +200,7 @@
         const VIDEO_ID = "KvMY1uzSC1E";
         let playerInstance = null;
 
-        // Load the YouTube Player API script package programmatically
+        // Load the API core package script
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -241,7 +249,7 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            // Programmatically builds the player frame with maximum UI restriction parameters
+            // Custom native variables to strip away player panels at a clean 1:1 aspect ratio
             playerInstance = new YT.Player('api-player-node', {
                 videoId: VIDEO_ID,
                 playerVars: {
