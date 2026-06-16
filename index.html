@@ -24,6 +24,13 @@
             margin: 0 auto;
         }
 
+        #loading-panel {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #888888;
+            margin-top: 50px;
+        }
+
         /* Minimalist Card Design */
         .anime-card {
             display: flex;
@@ -165,14 +172,16 @@
 <body>
 
     <div class="container">
-        <div id="anime-card" class="anime-card" onclick="openSubpage()">
+        <div id="loading-panel">Connecting to live anime stream...</div>
+
+        <div id="anime-card" class="anime-card" style="display: none;" onclick="openSubpage()">
             <div class="poster-frame">
-                <img src="https://images.weserv.nl/?url=https://cdn.myanimelist.net/images/anime/1811/128330.jpg" alt="Cyberpunk Edgerunners">
+                <img id="api-image" src="" alt="Cyberpunk Edgerunners">
             </div>
             <div class="card-info">
                 <div>
                     <h2 class="anime-title">Cyberpunk Edgerunners</h2>
-                    <p class="synopsis-preview">A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future. Having everything to lose, he stays alive by becoming an edgerunner: a mercenary outlaw also known as a cyberpunk.</p>
+                    <p class="synopsis-preview" id="api-synopsis"></p>
                 </div>
                 <div class="action-hint">Click to view page →</div>
             </div>
@@ -196,6 +205,31 @@
     <script>
         const VIDEO_ID = "KvMY1uzSC1E"; 
 
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchAnimeData();
+        });
+
+        // Pulls directly via Kitsu open API using strict slug querying to ensure 100% accuracy
+        async function fetchAnimeData() {
+            try {
+                const response = await fetch('https://kitsu.io/api/edge/anime?filter[slug]=cyberpunk-edgerunners');
+                if (!response.ok) throw new Error('Network fault');
+                
+                const json = await response.json();
+                const anime = json.data[0].attributes;
+
+                // Bind safe open-origin image asset fields and descriptions
+                document.getElementById('api-image').src = anime.posterImage.medium;
+                document.getElementById('api-synopsis').innerText = anime.synopsis.substring(0, 220) + "...";
+                
+                document.getElementById('loading-panel').style.display = 'none';
+                document.getElementById('anime-card').style.display = 'flex';
+            } catch (err) {
+                document.getElementById('loading-panel').innerText = 'Failed to process anime database asset data sequence.';
+                console.error(err);
+            }
+        }
+
         function openSubpage() {
             document.getElementById('details-subpage').style.display = 'block';
         }
@@ -211,7 +245,7 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            // Custom embedded parameters to strip out all player borders and branding elements
+            // Custom player flags strip away title headers, options, bars, and suggestions
             document.getElementById('video-target').innerHTML = `
                 <iframe 
                     src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" 
