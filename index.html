@@ -24,13 +24,6 @@
             margin: 0 auto;
         }
 
-        #loading-panel {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #888888;
-            margin-top: 50px;
-        }
-
         /* Minimalist Card Design */
         .anime-card {
             display: flex;
@@ -41,6 +34,7 @@
             cursor: pointer;
             gap: 24px;
             transition: border-color 0.2s, background 0.2s;
+            margin-top: 50px;
         }
 
         .anime-card:hover {
@@ -150,7 +144,6 @@
             background: #000000;
         }
 
-        /* Removes surrounding YouTube player UI elements for a clean look */
         .video-container iframe {
             position: absolute;
             top: 0;
@@ -172,16 +165,14 @@
 <body>
 
     <div class="container">
-        <div id="loading-panel">Loading Cyberpunk Edgerunners data...</div>
-        
-        <div id="anime-card" class="anime-card" style="display: none;" onclick="openSubpage()">
+        <div id="anime-card" class="anime-card" onclick="openSubpage()">
             <div class="poster-frame">
-                <img id="api-image" src="1000016812.jpg" alt="Cyberpunk Edgerunners">
+                <img src="https://cdn.myanimelist.net/images/anime/1811/128330.jpg" alt="Cyberpunk Edgerunners">
             </div>
             <div class="card-info">
                 <div>
-                    <h2 class="anime-title" id="api-title">Cyberpunk Edgerunners</h2>
-                    <p class="synopsis-preview" id="api-synopsis"></p>
+                    <h2 class="anime-title">Cyberpunk Edgerunners</h2>
+                    <p class="synopsis-preview">A street kid trying to survive in a technology and body modification-obsessed city of the future. Having everything to lose, he chooses to stay alive by becoming an edgerunner...</p>
                 </div>
                 <div class="action-hint">Click to view page →</div>
             </div>
@@ -192,7 +183,7 @@
         <div class="subpage-content">
             <button class="back-btn" onclick="closeSubpage()">← Back</button>
             
-            <h1 id="subpage-title" style="font-size: 2.5rem; margin-bottom: 20px;">Cyberpunk Edgerunners</h1>
+            <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Cyberpunk Edgerunners</h1>
             
             <button id="cry-action-btn" class="cry-btn" onclick="playCleanVideo()">Make Me Cry</button>
             
@@ -204,31 +195,6 @@
 
     <script>
         const VIDEO_ID = "KvMY1uzSC1E"; 
-        let edgerunnersData = null;
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadAnimeData();
-        });
-
-        // Pulls synopsis live from Jikan API, but leaves your customized text and image intact
-        async function loadAnimeData() {
-            try {
-                const response = await fetch('https://api.jikan.moe/v4/anime/49387');
-                if (!response.ok) throw new Error('API request mismatch');
-                
-                const result = await response.json();
-                edgerunnersData = result.data;
-
-                // Bind elements (Keeping your static local image and hardcoded title overrides)
-                document.getElementById('api-synopsis').innerText = edgerunnersData.synopsis.substring(0, 220) + "...";
-                
-                document.getElementById('loading-panel').style.display = 'none';
-                document.getElementById('anime-card').style.display = 'flex';
-            } catch (err) {
-                document.getElementById('loading-panel').innerText = 'Failed to load Cyberpunk Edgerunners data.';
-                console.error(err);
-            }
-        }
 
         function openSubpage() {
             document.getElementById('details-subpage').style.display = 'block';
@@ -245,7 +211,7 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            // Custom embedded parameters to remove YouTube clutter as much as possible
+            // Custom embedded parameters to remove YouTube clutter completely
             document.getElementById('video-target').innerHTML = `
                 <iframe 
                     src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" 
