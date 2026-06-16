@@ -73,7 +73,6 @@
         .anime-title {
             font-size: 2rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
         }
 
         .action-hint {
@@ -134,23 +133,27 @@
             opacity: 0.9;
         }
 
-        /* Native HTML5 Frameless Player Frame */
-        .video-container {
+        /* Frameless Video Cropping Window */
+        .video-window-wrapper {
             display: none;
+            position: relative;
             width: 100%;
             max-width: 800px;
             margin: 40px auto 0 auto;
+            padding-top: 56.25%; /* 16:9 Screen Ratio */
             background: #000000;
+            overflow: hidden; /* Cuts off the stretched video edges completely */
             border-radius: 6px;
-            overflow: hidden;
         }
 
-        /* Eliminates all surrounding visual wrapper elements */
-        video.custom-player {
-            width: 100%;
-            height: auto;
-            display: block;
-            outline: none;
+        /* Stretches the frame outward to hide native YouTube UI wrappers */
+        .video-window-wrapper iframe {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            pointer-events: none; /* Stops tap gestures from opening YouTube menus on mobile screens */
             border: none;
         }
     </style>
@@ -179,21 +182,27 @@
             
             <button id="cry-action-btn" class="cry-btn" onclick="playCleanVideo()">Make Me Cry</button>
             
-            <div id="player-wrapper" class="video-container">
-                <video id="native-video-node" class="custom-player" controls sandbox></video>
+            <div id="player-wrapper" class="video-window-wrapper">
+                <div id="api-player-node"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // High-quality, direct open-storage backup stream for "I Really Want to Stay At Your House" 
-        const DIRECT_STREAM_URL = "https://archive.org/download/cyberpunk-edgerunners-i-really-want-to-stay-at-your-house/Cyberpunk%3A%20Edgerunners%20%7C%20%E2%80%9CI%20Really%20Want%20to%20Stay%20At%20Your%20House%E2%80%9D%20by%20Rosa%20Walton%20%7C%20Music%20Video.mp4";
+        const VIDEO_ID = "KvMY1uzSC1E";
+        let playerInstance = null;
+
+        // Load the YouTube Player API script package programmatically
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchPosterAsset();
         });
 
-        // Pulls exclusively through Kitsu Open API to load the correct cover art
+        // Pulls exclusively through Kitsu Open API to load the correct cover art smoothly
         async function fetchPosterAsset() {
             try {
                 const response = await fetch('https://kitsu.io/api/edge/anime?filter[slug]=cyberpunk-edgerunners');
@@ -202,10 +211,8 @@
                 const json = await response.json();
                 const animeData = json.data[0].attributes;
 
-                // Load image directly from secure storage mirror
                 document.getElementById('api-image').src = animeData.posterImage.medium;
                 
-                // Toggle view blocks
                 document.getElementById('loading-panel').style.display = 'none';
                 document.getElementById('anime-card').style.display = 'flex';
             } catch (err) {
@@ -221,11 +228,10 @@
         function closeSubpage() {
             document.getElementById('details-subpage').style.display = 'none';
             
-            // Clean up running player instance entirely to prevent background audio bleed
-            const videoPlayer = document.getElementById('native-video-node');
-            videoPlayer.pause();
-            videoPlayer.src = "";
-            videoPlayer.load();
+            if (playerInstance && typeof playerInstance.destroy === 'function') {
+                playerInstance.destroy();
+                playerInstance = null;
+            }
 
             document.getElementById('player-wrapper').style.display = 'none';
             document.getElementById('cry-action-btn').style.display = 'inline-block';
@@ -235,11 +241,25 @@
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
 
-            const videoPlayer = document.getElementById('native-video-node');
-            videoPlayer.src = DIRECT_STREAM_URL;
-            videoPlayer.load();
-            videoPlayer.play().catch(error => {
-                console.log("Autoplay blocked by browser policy. Interaction required.");
+            // Programmatically builds the player frame with maximum UI restriction parameters
+            playerInstance = new YT.Player('api-player-node', {
+                videoId: VIDEO_ID,
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'iv_load_policy': 3,
+                    'fs': 0,
+                    'disablekb': 1,
+                    'autohide': 1
+                },
+                events: {
+                    'onReady': (event) => {
+                        event.target.playVideo();
+                    }
+                }
             });
         }
     </script>
