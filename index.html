@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>cyberpunk-edgerunners-player / Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    /* Custom authentic GitHub Monospace System styles */
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .gh-border { border-color: #30363d; }
+    .gh-bg-subtle { background-color: #161b22; }
+    .gh-bg-muted { background-color: #21262d; }
+    
+    /* System for responsive aspect-ratio player wrapper */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#388bfd]/30">
+
+  <header class="gh-bg-subtle border-b gh-border px-4 py-3 flex items-center justify-between text-sm">
+    <div class="flex items-center gap-3">
+      <svg class="fill-[#7d8590]" height="16" viewBox="0 0 16 16" width="16">
+        <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 1 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5 7V1.5h-8a1 1 0 0 0-1 1v8.356c.274-.226.622-.356 1-.356h8ZM3.5 14.25c0-.69.56-1.25 1.25-1.25h9a.75.75 0 0 1 0 1.5h-9a1.25 1.25 0 0 1-1.25-1.25Z"></path>
+      </svg>
+      <nav class="font-semibold text-[#e6edf3] flex items-center gap-1">
+        <a href="#" class="text-[#2f81f7] hover:underline">user</a>
+        <span class="text-[#7d8590] font-normal">/</span>
+        <a href="#" class="hover:underline">cyberpunk-edgerunners-player</a>
+        <span class="ml-2 text-xs font-normal px-2 py-0.5 rounded-full border gh-border text-[#7d8590]">Public</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gh-bg-subtle border-b gh-border px-4 pt-4">
+    <div class="max-w-5xl mx-auto flex gap-4 text-sm">
+      <div class="border-b-2 border-[#f78166] pb-2 px-2 font-semibold text-[#e6edf3] flex items-center gap-2 cursor-pointer">
+        <svg class="fill-[#7d8590]" height="16" viewBox="0 0 16 16" width="16">
+          <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Z"></path>
+        </svg>
+        <span>Code</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 text-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="md:col-span-1 space-y-4">
+        <div class="border gh-border rounded-md p-4 bg-[#161b22]">
+          <h2 class="font-semibold text-base text-[#e6edf3] mb-2">Emotional Engine Block</h2>
+          <p class="text-[#7d8590] text-xs mb-4 leading-relaxed">
+            Triggers programmatic execution of Cyberpunk: Edgerunners video sequence. Click below to begin sequence playback.
+          </p>
+          
+          <button 
+            id="cryButton" 
+            onclick="executeCrySequence()"
+            class="w-full text-center font-medium px-4 py-2 bg-[#238636] hover:bg-[#2ea043] text-white rounded-md border border-[#2a8f41] transition-colors shadow-sm focus:outline-none cursor-pointer"
+          >
+            make me cry
+          </button>
+        </div>
+
+        <div class="border gh-border rounded-md p-4 bg-[#161b22] text-xs space-y-2">
+          <div class="text-[#7d8590] font-semibold uppercase tracking-wider">Repository Specs</div>
+          <div class="flex justify-between"><span class="text-[#7d8590]">Media Asset:</span> <span class="font-mono text-[#e6edf3]">Rosa Walton</span></div>
+          <div class="flex justify-between"><span class="text-[#7d8590]">Status Code:</span> <span id="statusCode" class="font-mono text-[#8b949e]">IDLE</span></div>
+        </div>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="border gh-border rounded-md overflow-hidden bg-[#161b22]">
+          
+          <div class="gh-bg-muted border-b gh-border px-4 py-2.5 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-2 text-[#7d8590]">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f78166]/80 inline-block"></span>
+              <span>player_canvas.sh</span>
+            </div>
+            <span class="text-[#7d8590]">16:9 Workspace</span>
+          </div>
+
+          <div class="p-4 bg-[#0d1117]">
+            <div id="playerPlaceholder" class="video-container rounded border gh-border flex flex-col items-center justify-center bg-[#161b22] text-[#7d8590]">
+              <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                <svg class="stroke-[#30363d] mb-3" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <p class="font-mono text-xs">Awaiting Execution Sequence...</p>
+                <p class="text-[11px] text-[#484f58] mt-1">Press "make me cry" deck button to initialize stream.</p>
+              </div>
+            </div>
+            <div id="ytPlayerTarget" class="hidden"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="border-t gh-border mt-auto px-4 py-6 text-xs text-[#7d8590] text-center bg-[#0d1117]">
+    <p>© 2026 cyberpunk-edgerunners-player environment node matrix. Built utilizing semantic components.</p>
+  </footer>
+
+  <script>
+    // Asynchronously download the explicit official target YouTube Iframe tracking source API package
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    let player = null;
+    const targetVideoId = 'KvMY1uzSC1E'; // Extracted directly from reference URL: https://youtu.be/KvMY1uzSC1E
+
+    // Hook entrypoint triggered immediately upon background API environment resolution
+    function onYouTubeIframeAPIReady() {
+      console.log("YouTube Framework Engine state compiled successfully.");
+    }
+
+    // Execution sequence handler loop function code block engine core
+    function executeCrySequence() {
+      const placeholder = document.getElementById('playerPlaceholder');
+      const targetDiv = document.getElementById('ytPlayerTarget');
+      const statusText = document.getElementById('statusCode');
+      const mainBtn = document.getElementById('cryButton');
+
+      // Update state machine controls UI parameters visual styling
+      statusText.innerText = "PLAYING";
+      statusText.className = "font-mono text-[#34d399]";
+      mainBtn.innerText = "Sequence Engaged";
+      mainBtn.className = "w-full text-center font-medium px-4 py-2 bg-[#21262d] text-[#8b949e] rounded-md border gh-border cursor-not-allowed opacity-50";
+      mainBtn.disabled = true;
+
+      // Restructure interface layer DOM components visibility logic layout tree
+      placeholder.classList.add('hidden');
+      targetDiv.classList.remove('hidden');
+      targetDiv.className = "video-container rounded border gh-border";
+
+      // Instantiate iframe canvas layout runtime frame configuration parameters
+      player = new YT.Player('ytPlayerTarget', {
+        videoId: targetVideoId,
+        playerVars: {
+          'autoplay': 1,
+          'modestbranding': 1,
+          'rel': 0,
+          'controls': 1
+        },
+        events: {
+          'onReady': onPlayerReady
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      // Force programmatic audio play trigger stream dispatch directly
+      event.target.playVideo();
+    }
+  </script>
+</body>
+</html>
