@@ -17,8 +17,7 @@
 
         /* Pure Cyberpunk Palette Utilities */
         .neon-text-cyan { text-shadow: 0 0 10px rgba(0, 242, 255, 0.6), 0 0 20px rgba(0, 242, 255, 0.3); }
-        .neon-text-yellow { text-shadow: 0 0 10px rgba(251, 255, 0, 0.6); }
-        .neon-border-magenta { border-color: #ff0055; box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); }
+        .neon-text-magenta { text-shadow: 0 0 10px rgba(255, 0, 85, 0.6); }
         
         .cyber-panel {
             background: rgba(10, 15, 30, 0.85);
@@ -80,16 +79,16 @@
                 <div class="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-magenta-500 translate-x-[-2px] translate-y-[2px]"></div>
 
                 <div class="w-full aspect-[16/10] mb-4 overflow-hidden border border-gray-800 bg-gray-900/40 relative">
-                    <img id="apiCover" class="w-full h-full object-cover filter brightness-90 contrast-110 group-hover:scale-105 transition-transform duration-700" src="" alt="Loading...">
+                    <img id="apiCover" class="w-full h-full object-cover filter brightness-95 contrast-105 group-hover:scale-105 transition-transform duration-700" src="https://i.pinimg.com/736x/7h/Iy/0o/7hIy0o7es.jpg" alt="Edgerunners Core Intel" onerror="this.src='https://images.alphacoders.com/126/1263595.jpg'">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
 
                 <div class="bg-black/90 p-4 border-l-4 border-[#f9f000] group-hover:border-[#00f2ff] transition-colors">
-                    <h1 id="apiTitle" class="orbitron text-xl font-black text-[#f9f000] group-hover:text-[#00f2ff] tracking-tight mb-1 uppercase transition-colors">---</h1>
+                    <h1 id="apiTitle" class="orbitron text-xl font-black text-[#f9f000] group-hover:text-[#00f2ff] tracking-tight mb-1 uppercase transition-colors">CYBERPUNK: EDGERUNNERS</h1>
                     <div class="flex gap-3 text-[10px] text-gray-400 mb-2 font-mono">
-                        <span id="apiScore">SCORE: --</span>
-                        <span id="apiEpisodes">EPS: --</span>
-                        <span id="apiStatus">STATUS: --</span>
+                        <span id="apiScore">SCORE: 8.6</span>
+                        <span id="apiEpisodes">EPS: 10</span>
+                        <span id="apiStatus">STATUS: FINISHED</span>
                     </div>
                     <p class="text-xs text-gray-300 leading-relaxed font-mono">
                         System configuration link live. Click anywhere on this datapad vector matrix to map tracking coordinates to the internal video stream deck.
@@ -124,7 +123,7 @@
                     </div>
 
                     <div class="cyber-panel rounded-none p-4 text-[11px] font-mono space-y-3">
-                        <div class="text-magenta-500 text-[#ff0055] font-bold tracking-widest text-[10px] uppercase border-b border-[#ff0055]/30 pb-1">CHIP_DIAGNOSTICS</div>
+                        <div class="text-[#ff0055] font-bold tracking-widest text-[10px] uppercase border-b border-[#ff0055]/30 pb-1">CHIP_DIAGNOSTICS</div>
                         <div class="space-y-2 text-gray-400">
                             <div class="flex justify-between"><span>HOST_ENV:</span><span class="text-[#00f2ff]">VERCEL_PROD</span></div>
                             <div class="flex justify-between"><span>NET_SOCKET:</span><span class="text-emerald-400">CONNECTED</span></div>
@@ -183,35 +182,29 @@
 
         let player = null;
         const targetVideoId = 'KvMY1uzSC1E';
-        const cyberpunkMalId = 51352; // Official MyAnimeList Index ID mapping for Cyberpunk: Edgerunners
+        const cyberpunkMalId = 51352; // MyAnimeList Index ID mapping for Cyberpunk: Edgerunners
 
-        // Fetch dynamic content updates directly via Public Open Source Jikan API Framework Ecosystem
+        // Fetch fallback info updates via Public Jikan API Ecosystem while holding custom image override
         document.addEventListener("DOMContentLoaded", () => {
             fetch(`https://api.jikan.moe/v4/anime/${cyberpunkMalId}`)
                 .then(response => response.json())
                 .then(payload => {
                     const info = payload.data;
                     if(info) {
-                        document.getElementById('apiTitle').innerText = info.title;
-                        document.getElementById('apiScore').innerText = `SCORE: ${info.score || 'N/A'}`;
+                        document.getElementById('apiTitle').innerText = info.title.toUpperCase();
+                        document.getElementById('apiScore').innerText = `SCORE: ${info.score || '8.6'}`;
                         document.getElementById('apiEpisodes').innerText = `EPS: ${info.episodes || '10'}`;
                         document.getElementById('apiStatus').innerText = `STATUS: ${info.status.toUpperCase()}`;
-                        document.getElementById('apiCover').src = info.images.jpg.large_image_url;
                     }
                 })
-                .catch(err => {
-                    console.error("Data pipeline timeout. Reverting back to static cache layers:", err);
-                    // Standard fallback text definitions if public endpoints are throttling requests
-                    document.getElementById('apiTitle').innerText = "CYBERPUNK: EDGERUNNERS";
-                    document.getElementById('apiCover').src = "https://images.alphacoders.com/126/1263595.jpg";
-                });
+                .catch(err => console.log("API feed bypassed. Utilizing preset data layer mappings.", err));
         });
 
         function onYouTubeIframeAPIReady() {
             console.log("YouTube Stream Core Module Ready.");
         }
 
-        // Handle structural view context routing transitions
+        // Handle routing view context animations
         function navigateToPlayer() {
             const home = document.getElementById('homePage');
             const playerMain = document.getElementById('playerPage');
@@ -229,7 +222,7 @@
             }, 300);
         }
 
-        // Initialize active stream video player elements
+        // Initialize streaming player modules on demand
         function executeCrySequence() {
             const placeholder = document.getElementById('playerPlaceholder');
             const wrapperNode = document.getElementById('playerWrapperNode');
@@ -256,7 +249,7 @@
             player = new YT.Player('ytPlayerTarget', {
                 videoId: targetVideoId,
                 playerVars: {
-                    'autoplay': 1, // Enforce strict auto play trigger sequence directives on execution
+                    'autoplay': 1, // Auto play stream tracking directives verified on execution event initialization
                     'modestbranding': 1,
                     'rel': 0,
                     'controls': 1
@@ -268,7 +261,7 @@
         }
 
         function onPlayerReady(event) {
-            event.target.playVideo(); // Primary structural stream play command broadcast dispatch
+            event.target.playVideo();
         }
     </script>
 </body>
