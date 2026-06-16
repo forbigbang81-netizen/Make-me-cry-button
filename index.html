@@ -11,6 +11,8 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* Removes the default blue tap/click highlight box on mobile devices */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -31,7 +33,7 @@
             margin-top: 50px;
         }
 
-        /* Hero Card Node */
+        /* Hero Card Node with Smooth Initial Fade In */
         .anime-card {
             display: flex;
             background: #050505;
@@ -40,13 +42,22 @@
             padding: 24px;
             cursor: pointer;
             gap: 24px;
-            transition: border-color 0.2s, background 0.2s;
             margin-top: 50px;
+            outline: none;
+            
+            /* Smooth transitions for interactive states */
+            transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+            animation: fadeIn 0.6s ease forwards;
         }
 
         .anime-card:hover {
             background: #0c0c0c;
             border-color: #333333;
+            transform: translateY(-2px);
+        }
+
+        .anime-card:active {
+            transform: translateY(1px) scale(0.99);
         }
 
         .poster-frame {
@@ -79,6 +90,11 @@
             color: #007aff;
             font-weight: 600;
             margin-top: 15px;
+            transition: color 0.2s ease;
+        }
+
+        .anime-card:hover .action-hint {
+            color: #3594ff;
         }
 
         /* Seamless Subpage Overlay Layout */
@@ -101,6 +117,7 @@
             text-align: center;
         }
 
+        /* Minimalist Back Button */
         .back-btn {
             background: none;
             border: none;
@@ -109,13 +126,16 @@
             cursor: pointer;
             margin-bottom: 40px;
             display: inline-block;
+            outline: none;
+            transition: color 0.2s ease, transform 0.2s ease;
         }
 
         .back-btn:hover {
             color: #ffffff;
+            transform: translateX(-3px);
         }
 
-        /* Plain Action Button */
+        /* Plain Action Button with Interactive Hover Animations */
         .cry-btn {
             background: #ffffff;
             color: #000000;
@@ -125,15 +145,21 @@
             font-weight: 600;
             border-radius: 6px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            outline: none;
             margin-top: 40px;
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .cry-btn:hover {
-            opacity: 0.9;
+            opacity: 0.95;
+            transform: scale(1.04);
         }
 
-        /* Standard 1:1 Scale Framing Layout */
+        .cry-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Standard 1:1 Scale Framing Layout with Smooth Reveal Animation */
         .video-window-wrapper {
             display: none;
             position: relative;
@@ -144,9 +170,9 @@
             background: #000000;
             border-radius: 6px;
             overflow: hidden;
+            animation: expandVideo 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* Clean un-zoomed sizing matrix */
         .video-window-wrapper iframe {
             position: absolute;
             top: 0;
@@ -155,6 +181,29 @@
             height: 100%;
             border: none;
             pointer-events: none; /* Blocks accidental mobile click overlays */
+        }
+
+        /* Keyframe Micro-Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes expandVideo {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         @media (max-width: 600px) {
@@ -230,7 +279,20 @@
         }
 
         function openSubpage() {
-            document.getElementById('details-subpage').style.display = 'block';
+            const subpage = document.getElementById('details-subpage');
+            subpage.style.opacity = '0';
+            subpage.style.display = 'block';
+            
+            // Seamless full screen fade-in animation
+            let opacity = 0;
+            const fade = setInterval(() => {
+                if (opacity >= 1) {
+                    clearInterval(fade);
+                } else {
+                    opacity += 0.1;
+                    subpage.style.opacity = opacity;
+                }
+            }, 15);
         }
 
         function closeSubpage() {
