@@ -3,120 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIGHT_CITY_NET_NODE_v4.02</title>
+    <title>Cyberpunk Edgerunners Portal</title>
     <style>
-        /* Cyberpunk Terminal Aesthetics */
-        :root {
-            --neon-cyan: #00f0ff;
-            --neon-yellow: #fcee0a;
-            --neon-magenta: #ff0055;
-            --dark-bg: #030308;
-            --panel-bg: rgba(10, 10, 20, 0.85);
-            --crt-green: #39ff14;
-        }
-
+        /* Base Minimalist Black Theme */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: var(--neon-cyan);
-            overflow-x: hidden;
-            background-image: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 6px 100%;
-            padding: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 40px 20px;
         }
 
-        /* Scanline CRT overlay effect */
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-            z-index: 99999;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        header {
-            border: 2px solid var(--neon-yellow);
-            padding: 15px;
-            margin-bottom: 30px;
-            background: var(--panel-bg);
-            position: relative;
-            clip-path: polygon(0 0, 95% 0, 100% 40%, 100% 100%, 5% 100%, 0% 60%);
-        }
-
-        header h1 {
-            color: var(--neon-yellow);
-            font-size: 1.8rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .system-status {
-            font-size: 0.8rem;
-            color: var(--neon-magenta);
-            margin-top: 5px;
-        }
-
-        /* Unique Grid Interface Layout */
-        .gui-container {
-            max-width: 1200px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
         }
 
-        /* Custom Interactive OS Card */
-        .cyber-card {
-            background: var(--panel-bg);
-            border-left: 5px solid var(--neon-cyan);
-            border-right: 2px solid var(--neon-cyan);
-            border-top: 2px solid var(--neon-cyan);
-            border-bottom: 15px solid var(--neon-cyan);
-            padding: 20px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
+        #loading-panel {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #888888;
+            margin-top: 50px;
+        }
+
+        /* Minimalist Card Design */
+        .anime-card {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            background: #0a0a0a;
+            border: 1px solid #222222;
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            gap: 24px;
+            transition: border-color 0.2s, background 0.2s;
         }
 
-        @media(min-width: 768px) {
-            .cyber-card {
-                flex-direction: row;
-            }
-        }
-
-        .cyber-card:hover {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-            transform: scale(1.01);
-            background: rgba(15, 25, 45, 0.9);
+        .anime-card:hover {
+            background: #111111;
+            border-color: #444444;
         }
 
         .poster-frame {
-            border: 1px dashed var(--neon-cyan);
-            padding: 5px;
-            width: 100%;
-            max-width: 220px;
-            height: 310px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
+            flex-shrink: 0;
+            width: 180px;
+            height: 260px;
+            border-radius: 4px;
             overflow: hidden;
-            margin: 0 auto;
+            background: #151515;
         }
 
         .poster-frame img {
@@ -125,235 +63,197 @@
             object-fit: cover;
         }
 
-        .card-metadata {
-            flex: 1;
+        .card-info {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
         .anime-title {
-            color: var(--neon-yellow);
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(252, 238, 10, 0.3);
-            padding-bottom: 5px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
         .synopsis-preview {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            color: #b0d0d8;
-            margin-bottom: 15px;
+            color: #aaaaaa;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
-        .click-prompt {
-            font-weight: bold;
-            color: var(--neon-magenta);
-            animation: blink 1s infinite alternate;
+        .action-hint {
+            color: #007aff;
+            font-weight: 600;
+            margin-top: 15px;
         }
 
-        /* Overlay Interface Screen */
-        .overlay-screen {
+        /* Simple Subpage Overlay */
+        .subpage {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 8, 0.98);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
             z-index: 1000;
-            padding: 30px 20px;
+            padding: 40px 20px;
             overflow-y: auto;
         }
 
-        .overlay-content {
+        .subpage-content {
             max-width: 800px;
             margin: 0 auto;
-            border: 2px solid var(--neon-magenta);
-            background: var(--panel-bg);
-            padding: 25px;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);
+            text-align: center;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: transparent;
-            border: 1px solid var(--neon-magenta);
-            color: var(--neon-magenta);
-            padding: 5px 10px;
+        .back-btn {
+            background: none;
+            border: none;
+            color: #888888;
+            font-size: 1rem;
             cursor: pointer;
+            margin-bottom: 40px;
+            display: inline-block;
         }
 
-        .close-btn:hover {
-            background: var(--neon-magenta);
-            color: #000;
+        .back-btn:hover {
+            color: #ffffff;
         }
 
-        /* Media Player GUI Panel */
-        .player-panel {
-            margin-top: 20px;
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            background: #000;
-            position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        /* Plain Action Button */
+        .cry-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 40px;
+        }
+
+        .cry-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Frameless Media Player Layout */
+        .video-container {
             display: none;
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000000;
         }
 
-        .player-panel iframe {
+        /* Stripped parameters hiding player chrome and overlays */
+        .video-container iframe {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
         }
 
-        /* Custom GUI Button */
-        .cry-trigger-btn {
-            background: transparent;
-            border: 2px solid var(--neon-magenta);
-            color: var(--neon-magenta);
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.2s;
-            margin-top: 20px;
-            position: relative;
-            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
-        }
-
-        .cry-trigger-btn:hover {
-            background: var(--neon-magenta);
-            color: #000;
-            box-shadow: 0 0 15px var(--neon-magenta);
-        }
-
-        .cry-trigger-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Diagnostic Loading Indicator */
-        .loading-signal {
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 5px;
-            color: var(--neon-yellow);
-        }
-
-        @keyframes blink {
-            0% { opacity: 0.2; }
-            100% { opacity: 1; }
+        @media (max-width: 600px) {
+            .anime-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>NIGHT_CITY_NET_NODE // v4.02</h1>
-        <div class="system-status">SYS_STATUS: ACTIVE // TARGET: CYBERPUNK_EDGERUNNERS</div>
-    </header>
-
-    <div class="gui-container">
-        <div id="loading-panel" class="loading-signal">INITIALIZING JIKAN_API DATA STREAM...</div>
+    <div class="container">
+        <div id="loading-panel">Loading Edgerunners data matrix...</div>
         
-        <div id="anime-card" class="cyber-card" style="display: none;" onclick="openTerminalView()">
+        <div id="anime-card" class="anime-card" style="display: none;" onclick="openSubpage()">
             <div class="poster-frame">
-                <img id="api-image" src="" alt="Data Stream Target">
+                <img id="api-image" src="" alt="Cyberpunk Edgerunners">
             </div>
-            <div class="card-metadata">
+            <div class="card-info">
                 <div>
-                    <h2 class="anime-title" id="api-title">FETCHING ID...</h2>
-                    <p class="synopsis-preview" id="api-synopsis">Decoding localized synopsis matrix from remote node network coordinates...</p>
+                    <h2 class="anime-title" id="api-title">Cyberpunk: Edgerunners</h2>
+                    <p class="synopsis-preview" id="api-synopsis"></p>
                 </div>
-                <div class="click-prompt">[ ACCESS DATA NODE ]</div>
+                <div class="action-hint">Click to view page →</div>
             </div>
         </div>
     </div>
 
-    <div id="terminal-screen" class="overlay-screen">
-        <div class="overlay-content">
-            <button class="close-btn" onclick="closeTerminalView()">[ DISCONNECT ]</button>
-            <h2 id="modal-title" style="color: var(--neon-magenta); margin-bottom: 15px;">DATA CONSOLE</h2>
-            <p id="modal-desc" style="color: #b0d0d8; font-size: 0.95rem; line-height: 1.5;"></p>
+    <div id="details-subpage" class="subpage">
+        <div class="subpage-content">
+            <button class="back-btn" onclick="closeSubpage()">← Back</button>
             
-            <button id="cry-btn" class="cry-trigger-btn" onclick="engageEmotionalCore()">MAKE ME CRY</button>
+            <h1 id="subpage-title" style="font-size: 2.5rem; margin-bottom: 20px;">Cyberpunk: Edgerunners</h1>
             
-            <div id="video-wrapper" class="player-panel">
-                <div id="youtube-frame-placeholder"></div>
+            <button id="cry-action-btn" class="cry-btn" onclick="playCleanVideo()">Make Me Cry</button>
+            
+            <div id="player-wrapper" class="video-container">
+                <div id="video-target"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Target Media Resource Configuration
-        const VIDEO_ID = "KvMY1uzSC1E"; // Derived from custom youtube reference url
-        let animeDataCache = null;
+        const VIDEO_ID = "KvMY1uzSC1E"; 
+        let edgerunnersData = null;
 
-        // Life Cycle Entry Initialization Hook
         document.addEventListener("DOMContentLoaded", () => {
-            fetchEdgerunnersMetadata();
+            loadAnimeData();
         });
 
-        // Safe vanilla non-ai API asynchronous controller utilizing free public Jikan node
-        async function fetchEdgerunnersMetadata() {
+        // Direct async fetch sequence for Cyberpunk: Edgerunners (ID: 50265)
+        async function loadAnimeData() {
             try {
-                // Querying MyAnimeList ID 50265 (Cyberpunk: Edgerunners) via official Jikan v4 endpoints
                 const response = await fetch('https://api.jikan.moe/v4/anime/50265');
-                if (!response.ok) throw new Error('Network sequence aborted by remote host.');
+                if (!response.ok) throw new Error('API down');
                 
-                const json = await response.json();
-                animeDataCache = json.data;
+                const result = await response.json();
+                edgerunnersData = result.data;
 
-                // Populate custom layout structures safely
-                document.getElementById('api-image').src = animeDataCache.images.jpg.large_image_url;
-                document.getElementById('api-title').innerText = animeDataCache.title.toUpperCase();
-                document.getElementById('api-synopsis').innerText = animeDataCache.synopsis.substring(0, 180) + "...";
+                // Bind elements
+                document.getElementById('api-image').src = edgerunnersData.images.jpg.large_image_url;
+                document.getElementById('api-title').innerText = edgerunnersData.title;
+                document.getElementById('api-synopsis').innerText = edgerunnersData.synopsis.substring(0, 220) + "...";
                 
-                // Toggle element states safely
                 document.getElementById('loading-panel').style.display = 'none';
                 document.getElementById('anime-card').style.display = 'flex';
-            } catch (error) {
-                console.error('API Stream Exception:', error);
-                document.getElementById('loading-panel').innerText = 'CRITICAL ERROR: DATA CONFLICT ENCOUNTERED ON ENDPOINT REQUEST';
+            } catch (err) {
+                document.getElementById('loading-panel').innerText = 'Failed to load Edgerunners data.';
+                console.error(err);
             }
         }
 
-        // GUI Control functions
-        function openTerminalView() {
-            if(!animeDataCache) return;
-            
-            document.getElementById('modal-title').innerText = `DATA_ARCHIVE // ${animeDataCache.title.toUpperCase()}`;
-            document.getElementById('modal-desc').innerText = animeDataCache.synopsis;
-            document.getElementById('terminal-screen').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Lock base screen layers
+        function openSubpage() {
+            if (!edgerunnersData) return;
+            document.getElementById('subpage-title').innerText = edgerunnersData.title;
+            document.getElementById('details-subpage').style.display = 'block';
         }
 
-        function closeTerminalView() {
-            document.getElementById('terminal-screen').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Release window scroll parameters
-            
-            // Unload media content to accurately clean up ongoing background processes or sound structures
-            document.getElementById('youtube-frame-placeholder').innerHTML = '';
-            document.getElementById('video-wrapper').style.display = 'none';
-            document.getElementById('cry-btn').style.display = 'block';
+        function closeSubpage() {
+            document.getElementById('details-subpage').style.display = 'none';
+            // Unload completely to stop the video track
+            document.getElementById('video-target').innerHTML = '';
+            document.getElementById('player-wrapper').style.display = 'none';
+            document.getElementById('cry-action-btn').style.display = 'inline-block';
         }
 
-        // Custom action state mapping initialization
-        function engageEmotionalCore() {
-            // Conceal old action node component safely
-            document.getElementById('cry-btn').style.display = 'none';
-            
-            // Expose the native display panel frame safely
-            const wrapper = document.getElementById('video-wrapper');
-            wrapper.style.display = 'block';
+        function playCleanVideo() {
+            document.getElementById('cry-action-btn').style.display = 'none';
+            document.getElementById('player-wrapper').style.display = 'block';
 
-            // Programmatically establish sandboxed container properties with absolute parameters
-            // Plays the music video: “I Really Want to Stay At Your House” by Rosa Walton
-            document.getElementById('youtube-frame-placeholder').innerHTML = `
+            // Uses strict parameters to mask controls, branding, and related videos 
+            document.getElementById('video-target').innerHTML = `
                 <iframe 
-                    src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0" 
+                    src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>
