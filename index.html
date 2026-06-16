@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyberpunk Edgerunners Portal</title>
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
     <style>
-        /* Minimalist All-Black Canvas */
+        /* Minimalist All-Black Canvas Setup */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -32,7 +33,7 @@
             margin-top: 50px;
         }
 
-        /* Hero Card Node */
+        /* Home View Card Component Layout */
         .anime-card {
             display: flex;
             background: #050505;
@@ -85,7 +86,7 @@
             margin-top: 15px;
         }
 
-        /* Seamless Subpage Overlay Layout */
+        /* Subpage Modal Canvas Overlay Matrix */
         .subpage {
             display: none;
             position: fixed;
@@ -114,13 +115,10 @@
             margin-bottom: 40px;
             display: inline-block;
             outline: none;
-            transition: color 0.2s ease, transform 0.2s ease;
+            transition: color 0.2s ease;
         }
 
-        .back-btn:hover {
-            color: #ffffff;
-            transform: translateX(-3px);
-        }
+        .back-btn:hover { color: #ffffff; }
 
         .cry-btn {
             background: #ffffff;
@@ -141,128 +139,222 @@
             transform: scale(1.04);
         }
 
-        /* 100% Custom Video Player Layout */
-        .custom-player-wrapper {
+        /* 1:1 Matched Cinematic Player UI Layout Matrix */
+        .premium-player-canvas {
             display: none;
             position: relative;
             width: 100%;
             max-width: 800px;
             margin: 40px auto 0 auto;
             background: #000000;
-            border: 1px solid #222222;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
             animation: expandVideo 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         video {
             width: 100%;
             display: block;
+            object-fit: contain;
         }
 
-        /* Fully Custom Control Bar Interface */
-        .player-controls {
+        /* Heads Up Display Overlay Interface Elements */
+        .hud-control-layer {
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            height: 100%;
+            background: rgba(0, 0, 0, 0.45);
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            gap: 10px;
+            justify-content: space-between;
+            padding: 20px;
             opacity: 0;
             transition: opacity 0.3s ease;
-            z-index: 20;
+            z-index: 10;
         }
 
-        .custom-player-wrapper:hover .player-controls {
+        .premium-player-canvas:hover .hud-control-layer {
             opacity: 1;
         }
 
-        .controls-row {
+        /* Top Bar Layout Matrix */
+        .hud-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            width: 100%;
         }
 
-        .left-controls, .right-controls {
+        .hud-header-left {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .play-pause-btn, .mute-btn {
+        .hud-back-icon {
             background: none;
             border: none;
             color: #ffffff;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            outline: none;
         }
 
-        .time-display {
-            font-size: 0.85rem;
-            color: #aaaaaa;
-            font-variant-numeric: tabular-nums;
+        .hud-video-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px;
         }
 
-        /* Custom Styled Timelines and Ranges */
-        .progress-bar-container {
+        .hud-header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hud-header-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        /* Native Google Cast Component Tag integration */
+        google-cast-launcher {
+            --connected-color: #007aff;
+            --disconnected-color: #ffffff;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        /* Center Control Play State Matrix */
+        .hud-center-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        .center-action-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .center-action-btn.secondary { font-size: 2rem; }
+        .center-action-btn.primary { font-size: 3.5rem; }
+        .center-action-btn:hover { transform: scale(1.1); }
+        .center-action-btn:active { transform: scale(0.95); }
+
+        /* Bottom Control Panel Layout Matrix */
+        .hud-footer-column {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            height: 5px;
-            background: #333333;
-            cursor: pointer;
+            gap: 12px;
+        }
+
+        /* Timeline Slider Component Row */
+        .hud-timeline-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .timeline-slider-wrapper {
+            flex-grow: 1;
             position: relative;
-            border-radius: 2px;
-        }
-
-        .progress-filled {
-            height: 100%;
-            background: #007aff;
-            width: 0%;
-            border-radius: 2px;
-        }
-
-        .volume-slider {
-            width: 70px;
-            -webkit-appearance: none;
-            background: #333333;
-            height: 4px;
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ffffff;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.24);
+            border-radius: 4px;
             cursor: pointer;
         }
 
+        .timeline-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #ff0000; /* Signature Red Seek Line */
+            width: 0%;
+            border-radius: 4px;
+        }
+
+        .timeline-scrub-handle {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease;
+        }
+
+        .timeline-slider-wrapper:hover .timeline-scrub-handle {
+            transform: translate(-50%, -50%) scale(1.25);
+        }
+
+        /* System Action Options Row */
+        .hud-options-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .hud-options-left, .hud-options-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .hud-option-icon {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        /* Keyframe Transmit Curves */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes expandVideo {
-            from { opacity: 0; transform: scale(0.96); }
+            from { opacity: 0; transform: scale(0.97); }
             to { opacity: 1; transform: scale(1); }
         }
 
         @media (max-width: 600px) {
             .anime-card { flex-direction: column; align-items: center; text-align: center; }
-            .player-controls { opacity: 1; background: rgba(0,0,0,0.6); }
+            .hud-control-layer { opacity: 1; background: rgba(0,0,0,0.35); }
+            .hud-video-title { max-width: 200px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div id="loading-panel">Connecting to data stream...</div>
+        <div id="loading-panel">Connecting to database asset track...</div>
 
         <div id="anime-card" class="anime-card" style="display: none;" onclick="openSubpage()">
             <div class="poster-frame">
@@ -277,31 +369,55 @@
 
     <div id="details-subpage" class="subpage">
         <div class="subpage-content">
-            <button class="back-btn" onclick="closeSubpage()">← Back</button>
+            <button class="back-btn" onclick="closeSubpage()">← Back to Overview</button>
             
             <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Cyberpunk Edgerunners</h1>
             
             <button id="cry-action-btn" class="cry-btn" onclick="playCleanVideo()">Make Me Cry</button>
             
-            <div id="player-wrapper" class="custom-player-wrapper">
-                <video id="custom-video-node" playsinline>
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                </video>
+            <div id="player-wrapper" class="premium-player-canvas">
+                <video id="video-node" playsinline src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
                 
-                <div class="player-controls">
-                    <div class="progress-bar-container" id="progress-container">
-                        <div class="progress-filled" id="progress-fill"></div>
-                    </div>
-                    <div class="controls-row">
-                        <div class="left-controls">
-                            <button class="play-pause-btn" id="play-btn">▶</button>
-                            <div class="time-display"><span id="current-time">0:00</span> / <span id="duration-time">0:00</span></div>
+                <div class="hud-control-layer">
+                    
+                    <div class="hud-header-row">
+                        <div class="hud-header-left">
+                            <button class="hud-back-icon" onclick="closeSubpage()">←</button>
+                            <div class="hud-video-title" id="player-title">Cyberpunk: Edgerunners | "I Really Want to Stay At Your House" Music Video</div>
                         </div>
-                        <div class="right-controls">
-                            <button class="mute-btn" id="mute-btn">🔊</button>
-                            <input type="range" class="volume-slider" id="volume-bar" min="0" max="1" step="0.1" value="1">
+                        <div class="hud-header-right">
+                            <button class="hud-header-btn">📋</button>
+                            <google-cast-launcher></google-cast-launcher>
                         </div>
                     </div>
+
+                    <div class="hud-center-row">
+                        <button class="center-action-btn secondary" id="skip-back-btn">⏮</button>
+                        <button class="center-action-btn primary" id="master-play-btn">▶</button>
+                        <button class="center-action-btn secondary" id="skip-forward-btn">⏭</button>
+                    </div>
+
+                    <div class="hud-footer-column">
+                        <div class="hud-timeline-row">
+                            <span id="timestamp-current">00:00</span>
+                            <div class="timeline-slider-wrapper" id="timeline-track">
+                                <div class="timeline-progress-fill" id="timeline-progress"></div>
+                                <div class="timeline-scrub-handle" id="timeline-handle"></div>
+                            </div>
+                            <span id="timestamp-duration">00:00</span>
+                        </div>
+                        
+                        <div class="hud-options-row">
+                            <div class="hud-options-left">
+                                <button class="hud-option-icon" id="lock-btn">🔓</button>
+                                <button class="hud-option-icon" id="volume-btn">🔊</button>
+                            </div>
+                            <div class="hud-options-right">
+                                <button class="hud-option-icon" id="fullscreen-btn">🔲</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -309,20 +425,23 @@
     </div>
 
     <script>
-        const video = document.getElementById('custom-video-node');
-        const playBtn = document.getElementById('play-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const volumeBar = document.getElementById('volume-bar');
-        const progressContainer = document.getElementById('progress-container');
-        const progressFill = document.getElementById('progress-fill');
-        const currentTimeDisplay = document.getElementById('current-time');
-        const durationTimeDisplay = document.getElementById('duration-time');
+        const video = document.getElementById('video-node');
+        const masterPlayBtn = document.getElementById('master-play-btn');
+        const timelineTrack = document.getElementById('timeline-track');
+        const timelineProgress = document.getElementById('timeline-progress');
+        const timelineHandle = document.getElementById('timeline-handle');
+        const timestampCurrent = document.getElementById('timestamp-current');
+        const timestampDuration = document.getElementById('timestamp-duration');
+        const volumeBtn = document.getElementById('volume-btn');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchPosterAsset();
-            setupCustomPlayer();
+            initializeControlEngine();
+            initializeCastReceiver();
         });
 
+        // Pull Cover Poster Art Assets safely via Open Kitsu Gateway API Engine
         async function fetchPosterAsset() {
             try {
                 const response = await fetch('https://kitsu.io/api/edge/anime?filter[slug]=cyberpunk-edgerunners');
@@ -335,6 +454,72 @@
                 document.getElementById('loading-panel').innerText = 'Failed to load Cyberpunk Edgerunners data.';
             }
         }
+
+        // Connect Interactive State Functions and Track Progress Handlers 
+        function initializeControlEngine() {
+            masterPlayBtn.addEventListener('click', togglePlaybackState);
+            video.addEventListener('click', togglePlaybackState);
+
+            video.addEventListener('timeupdate', () => {
+                const progressRatio = video.currentTime / video.duration;
+                const percentage = progressRatio * 100;
+                
+                timelineProgress.style.width = `${percentage}%`;
+                timelineHandle.style.left = `${percentage}%`;
+                timestampCurrent.innerText = convertSecondsToTimestamp(video.currentTime);
+            });
+
+            video.addEventListener('loadedmetadata', () => {
+                timestampDuration.innerText = convertSecondsToTimestamp(video.duration);
+            });
+
+            timelineTrack.addEventListener('click', (event) => {
+                const rect = timelineTrack.getBoundingClientRect();
+                const clickPositionRatio = (event.clientX - rect.left) / rect.width;
+                video.currentTime = clickPositionRatio * video.duration;
+            });
+
+            volumeBtn.addEventListener('click', () => {
+                video.muted = !video.muted;
+                volumeBtn.innerText = video.muted ? '🔇' : '🔊';
+            });
+
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.getElementById('player-wrapper').requestFullscreen().catch(err => console.log(err));
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+        }
+
+        function togglePlaybackState() {
+            if (video.paused) {
+                video.play();
+                masterPlayBtn.innerText = '⏸';
+            } else {
+                video.pause();
+                masterPlayBtn.innerText = '▶';
+            }
+        }
+
+        function convertSecondsToTimestamp(totalSeconds) {
+            if (isNaN(totalSeconds)) return "00:00";
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        // Initialize Google Chromecast Sender Session Hooks
+        window.__onGCastApiAvailable = function(isAvailable) {
+            if (isAvailable) {
+                const context = cast.framework.CastContext.getInstance();
+                context.setOptions({
+                    receiverApplicationId: chrome.cast.media.DEFAULT_RECEIVER_APPLICATION_ID,
+                    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+                });
+            }
+        };
 
         function openSubpage() {
             const subpage = document.getElementById('details-subpage');
@@ -350,6 +535,7 @@
         function closeSubpage() {
             document.getElementById('details-subpage').style.display = 'none';
             video.pause();
+            masterPlayBtn.innerText = '▶';
             document.getElementById('player-wrapper').style.display = 'none';
             document.getElementById('cry-action-btn').style.display = 'inline-block';
         }
@@ -357,48 +543,8 @@
         function playCleanVideo() {
             document.getElementById('cry-action-btn').style.display = 'none';
             document.getElementById('player-wrapper').style.display = 'block';
-            video.play().catch(() => console.log("Autoplay paused. User click requested."));
-            playBtn.innerText = '⏸';
-        }
-
-        /* Custom Player System Event Logic Bindings */
-        function setupCustomPlayer() {
-            playBtn.addEventListener('click', () => {
-                if (video.paused) { video.play(); playBtn.innerText = '⏸'; }
-                else { video.pause(); playBtn.innerText = '▶'; }
-            });
-
-            video.addEventListener('timeupdate', () => {
-                const percentage = (video.currentTime / video.duration) * 100;
-                progressFill.style.width = `${percentage}%`;
-                currentTimeDisplay.innerText = formatTime(video.currentTime);
-            });
-
-            video.addEventListener('loadedmetadata', () => {
-                durationTimeDisplay.innerText = formatTime(video.duration);
-            });
-
-            progressContainer.addEventListener('click', (e) => {
-                const scrubTime = (e.offsetX / progressContainer.offsetWidth) * video.duration;
-                video.currentTime = scrubTime;
-            });
-
-            muteBtn.addEventListener('click', () => {
-                video.muted = !video.muted;
-                muteBtn.innerText = video.muted ? '🔇' : '🔊';
-            });
-
-            volumeBar.addEventListener('input', (e) => {
-                video.volume = e.target.value;
-                video.muted = e.target.value == 0;
-                muteBtn.innerText = video.muted ? '🔇' : '🔊';
-            });
-        }
-
-        function formatTime(time) {
-            const mins = Math.floor(time / 60);
-            const secs = Math.floor(time % 60).toString().padStart(2, '0');
-            return `${mins}:${secs}`;
+            video.play().catch(() => console.log("Autoplay context pending user interface interaction."));
+            masterPlayBtn.innerText = '⏸';
         }
     </script>
 </body>
