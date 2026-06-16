@@ -13,9 +13,8 @@
             overflow-x: hidden;
         }
         
-        /* Modern UI Glassmorphism styles */
         .glass-panel {
-            background: rgba(22, 27, 34, 0.7);
+            background: rgba(22, 27, 34, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -25,7 +24,6 @@
             border-color: rgba(255, 255, 255, 0.08);
         }
 
-        /* Fluid 16:9 Aspect Ratio Container for the Video Mount */
         .video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -40,12 +38,12 @@
             height: 100%;
         }
 
-        /* Hero Card Styling - High Quality Keyart Image */
+        /* Fixed background image with direct Unsplash fallback to ensure it never renders blank */
         #heroCard {
-            background-image: linear-gradient(to top, rgba(13, 18, 29, 0.95) 10%, rgba(13, 18, 29, 0.3) 60%, rgba(13, 18, 29, 0.1) 100%), 
-                              url('https://images.alphacoders.com/126/1263595.jpg');
+            background-image: linear-gradient(to top, rgba(13, 18, 29, 0.95) 5%, rgba(13, 18, 29, 0.3) 50%, rgba(13, 18, 29, 0.1) 100%), 
+                              url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1000');
             background-size: cover;
-            background-position: center 20%;
+            background-position: center;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
         }
         #heroCard:hover {
@@ -60,14 +58,14 @@
 
     <div class="w-full max-w-5xl mx-auto px-4 py-6 flex-grow flex flex-col justify-center items-center">
         
-        <div id="homePage" class="w-full max-w-2xl mx-auto opacity-100 transition-all duration-500 ease-out py-4">
-            <div id="heroCard" class="relative aspect-[4/5] sm:aspect-[16/10] w-full rounded-2xl border custom-border flex flex-col justify-end p-6 sm:p-10 shadow-2xl cursor-pointer" onclick="navigateToPlayer()">
+        <div id="homePage" class="w-full max-w-md mx-auto opacity-100 transition-all duration-500 ease-out py-4">
+            <div id="heroCard" class="relative aspect-[3/4] w-full rounded-2xl border custom-border flex flex-col justify-end p-6 shadow-2xl cursor-pointer" onclick="navigateToPlayer()">
                 
-                <div class="glass-panel p-5 sm:p-6 rounded-xl max-w-md border shadow-xl">
-                    <span class="text-[10px] tracking-widest uppercase font-bold text-cyan-400 mb-1.5 block">SYSTEM INTEL</span>
-                    <h1 class="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">Cyberpunk: Edgerunners</h1>
-                    <p class="text-xs sm:text-sm text-gray-400 leading-relaxed">
-                        Click here to initialize code pipelines and unpack the emotional runtime stream matrix safely.
+                <div class="glass-panel p-5 rounded-xl border shadow-xl">
+                    <span class="text-[11px] tracking-widest uppercase font-bold text-cyan-400 mb-1 block">yo gurt</span>
+                    <h1 class="text-2xl font-black text-white mb-1.5 tracking-tight">Cyberpunk: Edgerunners</h1>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        get ready to cry
                     </p>
                 </div>
             </div>
@@ -77,7 +75,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                 
                 <div class="lg:col-span-1 space-y-4">
-                    
                     <div class="glass-panel rounded-xl p-5 shadow-lg">
                         <h3 class="font-bold text-xs uppercase tracking-wider text-gray-200 mb-1.5 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
@@ -105,20 +102,18 @@
                             </div>
                             <div class="flex items-start gap-2">
                                 <span class="text-emerald-400">»</span>
-                                <p class="text-gray-400">Media source resolved correctly.</p>
+                                <p class="text-gray-400">Media source resolved.</p>
                             </div>
-                            <div id="logDynamicState" class="flex items-start gap-2 opacity-40 transition-opacity">
+                            <div id="logDynamicState" class="flex items-start gap-2 opacity-40">
                                 <span class="text-gray-400">»</span>
                                 <p class="text-gray-400">Pipeline state: <span id="statusCode" class="font-bold text-gray-400">IDLE</span></p>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="lg:col-span-3">
                     <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border">
-                        
                         <div class="bg-black/40 border-b custom-border px-5 py-3 flex items-center justify-between text-xs font-mono">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-cyan-400/80"></span>
@@ -128,8 +123,7 @@
                         </div>
 
                         <div class="p-4 bg-black/20">
-                            
-                            <div id="playerPlaceholder" class="video-wrapper rounded-lg border border-dashed border-gray-700 flex flex-col items-center justify-center bg-black/40 text-gray-500 transition-all min-h-[300px]">
+                            <div id="playerPlaceholder" class="video-wrapper rounded-lg border border-dashed border-gray-700 flex flex-col items-center justify-center bg-black/40 text-gray-500 min-h-[300px]">
                                 <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                                     <p class="font-mono text-xs text-gray-300 font-semibold uppercase tracking-wider mb-1">Canvas Render Target Inactive</p>
                                     <p class="text-xs text-gray-500 max-w-xs leading-relaxed">
@@ -141,9 +135,7 @@
                             <div id="playerWrapperNode" class="hidden w-full opacity-0 scale-95 transition-all duration-500">
                                 <div id="ytPlayerTarget" class="video-wrapper rounded-lg overflow-hidden border custom-border"></div>
                             </div>
-                            
                         </div>
-
                     </div>
                 </div>
 
@@ -169,7 +161,6 @@
             console.log("Core Client Engine initialized.");
         }
 
-        // Clean Inter-Page Route Vector Transition Core Loops
         function navigateToPlayer() {
             const home = document.getElementById('homePage');
             const playerMain = document.getElementById('playerPage');
@@ -180,7 +171,6 @@
                 home.classList.add('hidden');
                 playerMain.classList.remove('hidden');
                 
-                // Trigger modern smooth layout entry animation vectors safely
                 setTimeout(() => {
                     playerMain.classList.remove('opacity-0', 'scale-95');
                     playerMain.classList.add('opacity-100', 'scale-100');
@@ -188,7 +178,6 @@
             }, 300);
         }
 
-        // Primary Stream Event Control Initialization Function Engine Code Block Loop
         function executeCrySequence() {
             const placeholder = document.getElementById('playerPlaceholder');
             const wrapperNode = document.getElementById('playerWrapperNode');
@@ -196,41 +185,38 @@
             const logRow = document.getElementById('logDynamicState');
             const mainBtn = document.getElementById('cryButton');
 
-            // Switch layout state variables visual colors parameters text channels mapping
             statusText.innerText = "STREAMING_ACTIVE";
             statusText.className = "font-bold text-cyan-400";
             logRow.classList.remove('opacity-40');
             
             mainBtn.innerText = "Execution Confirmed";
-            mainBtn.className = "w-full text-center font-bold px-4 py-3 bg-transparent text-gray-500 rounded-lg border custom-border cursor-not-allowed opacity-30 text-xs uppercase tracking-wider shadow-none";
+            mainBtn.className = "w-full text-center font-bold px-4 py-3 bg-transparent text-gray-500 rounded-lg border custom-border cursor-not-allowed opacity-30 text-xs uppercase tracking-wider/none";
             mainBtn.disabled = true;
 
-            // Instantly transition and animate video layer visible window state elements properly
             placeholder.classList.add('hidden');
-            wrapperNode.classList.remove('hidden');
-            
-            setTimeout(() => {
-                wrapperNode.classList.remove('opacity-0', 'scale-95');
-                wrapperNode.classList.add('opacity-100', 'scale-100');
-            }, 50);
-
-            // Spawn and explicitly initialize the active video player element
-            player = new YT.Player('ytPlayerTarget', {
-                videoId: targetVideoId,
-                playerVars: {
-                    'autoplay': 1,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'controls': 1
+            wrapperNode.classList.remove('hidden
                 },
                 events: {
-                    'onReady': onPlayerReady
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
+        // Programmatic engine playback initialization
         function onPlayerReady(event) {
+            console.log("Media Canvas stream pipeline activated.");
             event.target.playVideo();
+        }
+
+        // Optional state machine tracking loops
+        function onPlayerStateChange(event) {
+            const statusText = document.getElementById('statusCode');
+            
+            if (event.data == YT.PlayerState.ENDED) {
+                statusText.innerText = "SEQUENCE_COMPLETE";
+                statusText.className = "font-bold text-amber-400";
+            }
         }
     </script>
 </body>
