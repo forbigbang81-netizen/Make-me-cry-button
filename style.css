@@ -500,16 +500,59 @@ body {
     .ctrl-btn { width: 40px; height: 40px; }
 }
 
-/* Tutorial Onboarding System Layout */
+/* Tutorial Base Global Screen Layer Overlay */
 .tutorial-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
     z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     pointer-events: auto;
     transition: opacity 0.3s ease;
 }
 
+/* Dialog prompt box configuration styling matrix */
+.tutorial-prompt-box {
+    background: #121214;
+    border: 1px solid #2e2e33;
+    border-radius: 14px;
+    padding: 24px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.85);
+}
+
+.tutorial-prompt-box p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.prompt-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.prompt-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.prompt-btn.yes { background: #e50914; color: #fff; }
+.prompt-btn.no { background: #2a2a2e; color: #aaa; }
+.prompt-btn:hover { opacity: 0.9; }
+
+/* Tracking instruction bubble template layout */
 .tutorial-bubble {
     position: absolute;
     background: #121214;
@@ -519,21 +562,7 @@ body {
     width: 280px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     text-align: center;
-    transition: all 0.3s ease;
     z-index: 10000;
-}
-
-/* Animated Pulse Pointer Arrow Element */
-.tutorial-arrow-pointer {
-    font-size: 26px;
-    margin-bottom: 6px;
-    display: inline-block;
-    animation: bounceIndicator 0.6s infinite alternate ease-in-out;
-}
-
-@keyframes bounceIndicator {
-    from { transform: translateY(-4px); }
-    to { transform: translateY(6px); }
 }
 
 .tutorial-bubble p {
