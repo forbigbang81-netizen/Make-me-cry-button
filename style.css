@@ -57,7 +57,7 @@ body {
     padding: 24px;
     cursor: pointer;
     text-align: center;
-    transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     backdrop-filter: blur(8px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
@@ -94,20 +94,17 @@ body {
 }
 
 .anime-description {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     line-height: 1.5;
     color: #a1a1aa;
     margin-bottom: 20px;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-weight: 500;
 }
 
 .action-hint {
     color: #e50914;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     transition: color 0.2s;
 }
 
@@ -523,7 +520,7 @@ body {
 .tutorial-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.88); /* Deepened backdrop contrast */
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -580,7 +577,7 @@ body {
     width: 280px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.85);
     text-align: center;
-    z-index: 10000;
+    z-index: 10002; /* Raised clear above spotlight layer */
 }
 
 .tutorial-bubble p {
@@ -607,10 +604,25 @@ body {
     color: #fff;
 }
 
-/* Spotlight Highlighting Matrix Rules */
+/* Spotlight Highlighting Matrix Rules with Blinking Red Focus Animation */
 .tutorial-spotlight {
     position: relative;
     z-index: 10001 !important;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72), 0 0 18px #e50914 !important;
-    pointer-events: auto !important;
+    pointer-events: auto !important; /* Forces interactivity access override */
+    animation: spotlightRedPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes spotlightRedPulse {
+    0% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.88), 0 0 10px #e50914;
+        border-color: #e50914;
+    }
+    50% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.88), 0 0 25px #ff333a;
+        border-color: #ff333a;
+    }
+    100% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.88), 0 0 10px #e50914;
+        border-color: #e50914;
+    }
 }
