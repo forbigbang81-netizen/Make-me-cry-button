@@ -100,10 +100,10 @@ async function fetchAnimeMetadata() {
 }
 
 /* Handles initial Yes/No choices for onboarding walkthrough */
+// Modified to set block configuration layouts correctly
 function handleTutorialChoice(wantsTutorial) {
     elements.tutPrompt.style.display = 'none';
     if (wantsTutorial) {
-        // Change overlay setup to track dynamic coordinates rather than simple flex placement
         elements.tutOverlay.style.display = 'block';
         startTutorialSequence();
     } else {
@@ -115,25 +115,20 @@ function startTutorialSequence() {
     tutorialStep = 1;
     elements.tutBubble.style.display = 'block';
     elements.tutText.textContent = "Click the card";
-    positionTutorialBubble(elements.animeCard, 'bottom');
+    positionTutorialBubbleAboveScreen();
     elements.animeCard.classList.add('tutorial-spotlight');
 }
 
-function positionTutorialBubble(targetEl, preferredPosition) {
-    if (!targetEl) return;
-    const rect = targetEl.getBoundingClientRect();
+// Places the tutorial box near the middle, right above the card or subpage layout bounds
+function positionTutorialBubbleAboveScreen() {
+    const bubbleWidth = 280;
+    const windowWidth = window.innerWidth;
     
-    let top = 0;
-    let left = rect.left + (rect.width / 2) - 140;
-
-    if (preferredPosition === 'bottom') {
-        top = rect.bottom + window.scrollY + 15;
-    } else { 
-        top = rect.top + window.scrollY - 135; 
-    }
-
+    // Centered horizontally on the viewport canvas screen
+    let left = (windowWidth / 2) - (bubbleWidth / 2);
     if (left < 10) left = 10;
-    if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+
+    let top = 60; // Standard layout gap margin near the top-middle segment
 
     elements.tutBubble.style.top = `${top}px`;
     elements.tutBubble.style.left = `${left}px`;
@@ -142,7 +137,7 @@ function positionTutorialBubble(targetEl, preferredPosition) {
 function terminateTutorial() {
     tutorialStep = 0;
     elements.tutOverlay.style.display = 'none';
-    elements.tutPrompt.style.display = 'block'; // Reset for next iteration if ever called
+    elements.tutPrompt.style.display = 'block'; 
     elements.tutBubble.style.display = 'none';
     elements.animeCard.classList.remove('tutorial-spotlight');
     elements.cryActionBtn.classList.remove('tutorial-spotlight');
@@ -174,8 +169,10 @@ function openSubpage() {
         elements.animeCard.classList.remove('tutorial-spotlight');
         tutorialStep = 2;
         elements.tutText.textContent = "Click make me cry button and cry!";
+        
+        // Keeps the box in its constant accessible near-middle top space position
         setTimeout(() => {
-            positionTutorialBubble(elements.cryActionBtn, 'top');
+            positionTutorialBubbleAboveScreen();
             elements.cryActionBtn.classList.add('tutorial-spotlight');
         }, 350);
     }
@@ -395,7 +392,6 @@ function trackActivePopup(pop) {
     activePopup = pop.classList.contains('visible') ? pop : null;
 }
 
-// Drops standard popups out of visible layout stack matrices
 function closeActivePopups(exclude = null) {
     if (activePopup && activePopup !== exclude) {
         activePopup.classList.remove('visible');
@@ -482,7 +478,6 @@ function showControlsBar() {
     resetControlsTimeout();
 }
 
-// Hides overlay row controls if condition thresholds allow it
 function hideControlsBar() {
     if (isPlayerReady && nativePlayer && !nativePlayer.paused) {
         elements.videoContainer.classList.add('controls-hidden');
@@ -531,6 +526,11 @@ function setupInteractiveEventListeners() {
     window.addEventListener('touchmove', moveScrub, {passive: true});
     window.addEventListener('touchend', endScrub);
 
+    // Responsive window resize recalculation matrix tracking
+    window.addEventListener('resize', () => {
+        if (tutorialStep > 0) positionTutorialBubbleAboveScreen();
+    });
+
     window.addEventListener('keydown', (e) => {
         if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
         if (isControlsLocked && e.key !== 'l' && e.key !== 'L') return;
@@ -546,7 +546,20 @@ function setupInteractiveEventListeners() {
             case 'm':
                 toggleMuteState();
                 break;
+            case 'm':
+                toggleMuteState();
+                break;
+            case 'l':
+                toggleInterfaceLock();
+                break;
+            case 'arrowleft':
+                performDoubleTapSeek('left');
+                showControlsBar();
+                break;
+            case 'arrowright':
+                performDoubleTapSeek('right');
+                showControlsBar();
+                break;
         }
     });
 }
-          
