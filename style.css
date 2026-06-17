@@ -1,4 +1,4 @@
-/* Minimalist All-Black Canvas Setup */
+/* Minimalist Canvas Setup */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -18,12 +18,29 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Homepage Only High Quality Animated Stretching Background */
+.animated-portal-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXN6emh2c2R6cmtlZzdhc2RqdXBtM2pqaG04dHVsOHl1ZHl0eW8wdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fA7rLtaJDIWEVkYEGk/giphy.gif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    transition: opacity 0.4s ease;
 }
 
 .container {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
 #loading-panel {
@@ -34,19 +51,20 @@ body {
 
 /* Home View Card Component Layout */
 .anime-card {
-    background: #09090b;
+    background: rgba(9, 9, 11, 0.85);
     border: 1px solid #1c1c1f;
     border-radius: 16px;
     padding: 24px;
     cursor: pointer;
     text-align: center;
     transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
 .anime-card:hover {
-    background: #121214;
-    border-color: #2e2e33;
+    background: rgba(18, 18, 20, 0.9);
+    border-color: #e50914;
     transform: translateY(-2px);
 }
 
@@ -87,14 +105,14 @@ body {
 }
 
 .action-hint {
-    color: #007aff;
+    color: #e50914;
     font-weight: 600;
     font-size: 0.95rem;
     transition: color 0.2s;
 }
 
 .anime-card:hover .action-hint {
-    color: #3594ff;
+    color: #ff333a;
 }
 
 /* Subpage Modal Canvas Overlay Matrix */
@@ -135,8 +153,8 @@ body {
 .back-btn-global:hover { color: #ffffff; }
 
 .cry-btn {
-    background: #ffffff;
-    color: #000000;
+    background: #e50914;
+    color: #ffffff;
     border: none;
     padding: 16px 40px;
     font-size: 1.1rem;
@@ -145,6 +163,7 @@ body {
     cursor: pointer;
     margin-top: 20px;
     transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
 }
 
 .cry-btn:hover {
@@ -187,7 +206,7 @@ body {
     cursor: pointer;
 }
 
-/* Top Bar Control Array Styling - Fixed Alignment */
+/* Top Bar Control Array Styling */
 .top-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -504,13 +523,12 @@ body {
 .tutorial-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
     pointer-events: auto;
-    transition: opacity 0.3s ease;
 }
 
 /* Dialog prompt box configuration styling matrix */
@@ -558,20 +576,18 @@ body {
     background: #121214;
     border: 2px solid #e50914;
     border-radius: 12px;
-    padding: 16px;
+    padding: 14px 16px;
     width: 280px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.85);
     text-align: center;
     z-index: 10000;
-    /* Smooth transitions when moving */
-    transition: top 0.3s ease, left 0.3s ease;
 }
 
 .tutorial-bubble p {
     font-size: 14px;
     line-height: 1.4;
     color: #ffffff;
-    margin-bottom: 12px;
+    font-weight: 500;
 }
 
 .tutorial-bubble button {
@@ -582,6 +598,7 @@ body {
     border-radius: 20px;
     font-size: 12px;
     cursor: pointer;
+    margin-top: 12px;
     transition: all 0.2s;
 }
 
@@ -594,6 +611,6 @@ body {
 .tutorial-spotlight {
     position: relative;
     z-index: 10001 !important;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), 0 0 15px #e50914 !important;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72), 0 0 18px #e50914 !important;
     pointer-events: auto !important;
 }
