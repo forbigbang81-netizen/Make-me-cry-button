@@ -172,10 +172,17 @@
     </div>
 
     <div id="tutorialOverlay" class="tutorial-overlay" style="display: none;">
-        <div id="tutorialBubble" class="tutorial-bubble">
-            <div id="tutorialArrow" class="tutorial-arrow-pointer">👇</div>
-            <p id="tutorialText">Click on the card to make yourself cry!</p>
-            <button id="tutorialSkip" onclick="terminateTutorial()">Skip Tutorial</button>
+        <div id="tutorialPrompt" class="tutorial-prompt-box">
+            <p>Would you like a tutorial walkthrough?</p>
+            <div class="prompt-actions">
+                <button class="prompt-btn yes" onclick="handleTutorialChoice(true)">Yes</button>
+                <button class="prompt-btn no" onclick="handleTutorialChoice(false)">No</button>
+            </div>
+        </div>
+
+        <div id="tutorialBubble" class="tutorial-bubble" style="display: none;">
+            <p id="tutorialText">Click the card</p>
+            <button id="tutorialSkip" onclick="terminateTutorial()">Finish Tutorial</button>
         </div>
     </div>
 
