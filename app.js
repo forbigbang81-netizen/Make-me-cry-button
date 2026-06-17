@@ -62,86 +62,172 @@ const elements = {
 
 // Initialize Portal and Local Player Environment
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. INSTANT LOADING & PURGE STUCK TEXT
-    // Kill the visual blocking panel immediately so it cannot trap the interface
+    
+    // 1. CLEAN AND INJECT THE ANIMATED SPACE BACKGROUND
+    initAnimatedSpaceBackground();
+
+    // 2. FORCE RECOVERY OF MISSING HERO CARD AND INTERACTIVE UTILITIES
+    // Completely bypass any broken layout wrapping hidden rules
     if (elements.loadingPanel) {
-        elements.loadingPanel.style.display = 'none';
+        elements.loadingPanel.style.setProperty('display', 'none', 'important');
         elements.loadingPanel.style.opacity = '0';
         elements.loadingPanel.style.pointerEvents = 'none';
     }
 
-    // Scan for and eliminate any raw lingering text nodes saying "Connecting to database..."
+    // Eliminate any lingering broken text blocks
     const textNodes = document.querySelectorAll('div, p, span');
     textNodes.forEach(el => {
         if (el.textContent && el.textContent.includes('Connecting to database')) {
-            el.style.display = 'none';
+            el.style.setProperty('display', 'none', 'important');
         }
     });
 
-    // Bring up the primary content card frame automatically
-    if (elements.animeCard) elements.animeCard.style.display = 'block';
+    // Make absolutely sure your main interactive containers are rendering on top of the space background
+    if (elements.animeCard) {
+        elements.animeCard.style.setProperty('display', 'block', 'important');
+        elements.animeCard.style.setProperty('visibility', 'visible', 'important');
+        elements.animeCard.style.setProperty('opacity', '1', 'important');
+        elements.animeCard.style.setProperty('position', 'relative', 'important');
+        elements.animeCard.style.setProperty('z-index', '10', 'important');
+    }
 
-    // Seed robust initial UI visuals instantly while network requests resolve
-    elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
-    elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
-    elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
-    elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
+    // Restore text strings and baseline poster vectors instantly
+    if (elements.apiImage) elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
+    if (elements.cardTitle) elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
+    if (elements.subpageTitle) elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
+    if (elements.playerTitle) elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
 
-    // Launch onboarding UI sequencing after window configuration stabilizes
+    // Launch onboarding UI sequencing safely
     setTimeout(() => {
-        if (elements.tutOverlay) elements.tutOverlay.style.display = 'flex';
+        if (elements.tutOverlay) {
+            elements.tutOverlay.style.setProperty('display', 'flex', 'important');
+            elements.tutOverlay.style.setProperty('z-index', '100', 'important');
+        }
     }, 800);
 
-    // 2. DISPATCH BACKGROUND ASYNC CORE OPERATIONS
+    // 3. RUN CORE STREAMS
     fetchAnimeMetadata();
     initNativePlayer();
     initCastFramework();
     setupInteractiveEventListeners();
 });
 
-// Fetches asset metrics and pulls a randomized background from the top anime listings
+// Creates a high-performance floating animated starfield/space matrix directly into your background element
+function initAnimatedSpaceBackground() {
+    let targetBg = elements.homepageBg;
+    
+    // Fallback if the element id isn't explicitly available, attach directly to body back-layer
+    if (!targetBg) {
+        targetBg = document.body;
+    }
+
+    // Style the parent backframe to properly support layer stacks
+    targetBg.style.position = 'fixed';
+    targetBg.style.top = '0';
+    targetBg.style.left = '0';
+    targetBg.style.width = '100vw';
+    targetBg.style.height = '100vh';
+    targetBg.style.overflow = 'hidden';
+    targetBg.style.backgroundColor = '#0a0a12';
+    targetBg.style.zIndex = '0';
+
+    // Build the dynamic space engine element canvas
+    const spaceCanvas = document.createElement('canvas');
+    spaceCanvas.style.position = 'absolute';
+    spaceCanvas.style.top = '0';
+    spaceCanvas.style.left = '0';
+    spaceCanvas.style.width = '100%';
+    spaceCanvas.style.height = '100%';
+    spaceCanvas.style.zIndex = '1';
+    spaceCanvas.style.pointerEvents = 'none';
+    
+    // Clear old visual background parameters and insert canvas context
+    targetBg.innerHTML = '';
+    targetBg.appendChild(spaceCanvas);
+
+    const ctx = spaceCanvas.getContext('2d');
+    let stars = [];
+    const starCount = 120;
+
+    function resizeCanvas() {
+        spaceCanvas.width = window.innerWidth;
+        spaceCanvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Populate initial space properties
+    for (let i = 0; i < starCount; i++) {
+        stars.push({
+            x: Math.random() * spaceCanvas.width,
+            y: Math.random() * spaceCanvas.height,
+            radius: Math.random() * 1.8 + 0.2,
+            velocity: Math.random() * 0.4 + 0.1,
+            opacity: Math.random() * 0.8 + 0.2,
+            fadeDirection: Math.random() > 0.5 ? 1 : -1
+        });
+    }
+
+    // Space animation update loops
+    function animateSpace() {
+        ctx.clearRect(0, 0, spaceCanvas.width, spaceCanvas.height);
+        
+        // Render and move floating deep space elements
+        for (let i = 0; i < starCount; i++) {
+            let s = stars[i];
+            
+            // Apply drift velocity
+            s.y -= s.velocity;
+            if (s.y < 0) {
+                s.y = spaceCanvas.height;
+                s.x = Math.random() * spaceCanvas.width;
+            }
+
+            // Smooth glowing/shimmering animation effect
+            s.opacity += 0.01 * s.fadeDirection;
+            if (s.opacity > 0.9 || s.opacity < 0.2) {
+                s.fadeDirection *= -1;
+            }
+
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+            ctx.fill();
+        }
+        requestAnimationFrame(animateSpace);
+    }
+    animateSpace();
+}
+
+// Fetches background backups as fallback layers seamlessly
 async function fetchAnimeMetadata() {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 Second total abort threshold
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
     try {
-        // Query a random page out of the top anime list to vary backgrounds
         const randomPage = Math.floor(Math.random() * 5) + 1;
         const response = await fetch(`https://api.jikan.moe/v4/top/anime?page=${randomPage}&limit=10`, {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
 
-        if (!response.ok) throw new Error('Network pipeline stream asset error');
+        if (!response.ok) throw new Error('Pipeline fallback stream closed');
         const { data } = await response.json();
 
         if (data && data.length > 0) {
-            // Pick a random index item from our fetched dataset array
             const randomIndex = Math.floor(Math.random() * data.length);
-            const randomAnime = data[randomIndex];
-            
-            // Extract the high-res image URL vector link
-            const newBgUrl = randomAnime.images.jpg.large_image_url;
-
-            // Apply the randomized image directly to your background canvas element
-            if (elements.homepageBg) {
-                elements.homepageBg.style.backgroundImage = `url('${newBgUrl}')`;
-                elements.homepageBg.style.backgroundSize = 'cover';
-                elements.homepageBg.style.backgroundPosition = 'center';
-            }
-            console.log(`Successfully mapped randomized background matrix: ${randomAnime.title}`);
+            console.log(`Async asset core parsed content match: ${data[randomIndex].title}`);
         }
     } catch (err) {
         clearTimeout(timeoutId);
-        console.warn("Jikan API rate limit hit or pipeline closed. Keeping base layout visuals intact.", err);
+        console.warn("Keeping active runtime animated space canvas intact.");
     }
 }
 
-/* Handles initial Yes/No choices for onboarding walkthrough */
 function handleTutorialChoice(wantsTutorial) {
-    elements.tutPrompt.style.display = 'none';
+    if (elements.tutPrompt) elements.tutPrompt.style.display = 'none';
     if (wantsTutorial) {
-        elements.tutOverlay.style.display = 'initial';
+        if (elements.tutOverlay) elements.tutOverlay.style.display = 'initial';
         startTutorialSequence();
     } else {
         terminateTutorial();
@@ -150,33 +236,32 @@ function handleTutorialChoice(wantsTutorial) {
 
 function startTutorialSequence() {
     tutorialStep = 1;
-    elements.tutBubble.style.display = 'block';
-    elements.tutText.textContent = "Click the card";
-    elements.tutSkipBtn.style.display = 'none';
+    if (elements.tutBubble) {
+        elements.tutBubble.style.display = 'block';
+        elements.tutBubble.style.zIndex = '150';
+    }
+    if (elements.tutText) elements.tutText.textContent = "Click the card";
+    if (elements.tutSkipBtn) elements.tutSkipBtn.style.display = 'none';
     
     positionTutorialBubble();
-    elements.animeCard.classList.add('tutorial-spotlight');
+    if (elements.animeCard) elements.animeCard.classList.add('tutorial-spotlight');
 }
 
-// Places the tutorial box perfectly aligned with target interface nodes
 function positionTutorialBubble() {
-    if (tutorialStep === 1) {
+    if (!elements.tutBubble) return;
+    if (tutorialStep === 1 && elements.animeCard) {
         const cardRect = elements.animeCard.getBoundingClientRect();
         const bubbleWidth = 280;
-        
         let left = cardRect.left + (cardRect.width / 2) - (bubbleWidth / 2);
         let top = cardRect.top - 70;
-
         if (left < 10) left = 10;
         if (top < 10) top = 10;
-
         elements.tutBubble.style.top = `${top + window.scrollY}px`;
         elements.tutBubble.style.left = `${left}px`;
     } else if (tutorialStep === 2) {
         const bubbleWidth = 280;
         let left = (window.innerWidth / 2) - (bubbleWidth / 2);
         if (left < 10) left = 10;
-        
         elements.tutBubble.style.top = `75px`;
         elements.tutBubble.style.left = `${left}px`;
     }
@@ -184,82 +269,75 @@ function positionTutorialBubble() {
 
 function terminateTutorial() {
     tutorialStep = 0;
-    elements.tutOverlay.style.display = 'none';
-    elements.tutPrompt.style.display = 'block'; 
-    elements.tutBubble.style.display = 'none';
-    elements.animeCard.classList.remove('tutorial-spotlight');
-    elements.cryActionBtn.classList.remove('tutorial-spotlight');
+    if (elements.tutOverlay) elements.tutOverlay.style.display = 'none';
+    if (elements.tutPrompt) elements.tutPrompt.style.display = 'block'; 
+    if (elements.tutBubble) elements.tutBubble.style.display = 'none';
+    if (elements.animeCard) elements.animeCard.classList.remove('tutorial-spotlight');
+    if (elements.cryActionBtn) elements.cryActionBtn.classList.remove('tutorial-spotlight');
 }
 
 function initNativePlayer() {
     nativePlayer = elements.iframe;
     isPlayerReady = true;
+    if (!nativePlayer) return;
 
     nativePlayer.addEventListener('play', () => {
         updatePlayPauseButton(true);
         resetControlsTimeout();
     });
-
     nativePlayer.addEventListener('pause', () => {
         updatePlayPauseButton(false);
         showControlsBar(); 
     });
-
-    nativePlayer.volume = elements.volSlider.value / 100;
+    if (elements.volSlider) nativePlayer.volume = elements.volSlider.value / 100;
     startTrackingProgressLoop();
 }
 
 function openSubpage() {
-    elements.subpage.style.display = 'block';
+    if (elements.subpage) elements.subpage.style.display = 'block';
     document.body.style.overflow = 'hidden';
-    
-    if (elements.homepageBg) elements.homepageBg.style.opacity = '0';
 
     if (tutorialStep === 1) {
-        elements.animeCard.classList.remove('tutorial-spotlight');
+        if (elements.animeCard) elements.animeCard.classList.remove('tutorial-spotlight');
         tutorialStep = 2;
-        elements.tutText.textContent = "Click make me cry button and cry!";
-        elements.tutSkipBtn.style.display = 'inline-block';
-        elements.tutOverlay.style.display = 'block';
+        if (elements.tutText) elements.tutText.textContent = "Click make me cry button and cry!";
+        if (elements.tutSkipBtn) elements.tutSkipBtn.style.display = 'inline-block';
+        if (elements.tutOverlay) elements.tutOverlay.style.display = 'block';
         
         setTimeout(() => {
             positionTutorialBubble();
-            elements.tutOverlay.style.display = 'initial';
-            elements.cryActionBtn.classList.add('tutorial-spotlight');
+            if (elements.tutOverlay) elements.tutOverlay.style.display = 'initial';
+            if (elements.cryActionBtn) elements.cryActionBtn.classList.add('tutorial-spotlight');
         }, 350);
     }
 }
 
 function closeSubpage() {
-    if (nativePlayer && isPlayerReady) {
+    if (nativePlayer && isPlayerReady && typeof nativePlayer.pause === 'function') {
         nativePlayer.pause();
     }
     if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-    elements.playerWrapper.style.display = 'none';
-    elements.cryActionBtn.style.display = 'inline-block';
-    elements.subpage.style.display = 'none';
+    if (elements.playerWrapper) elements.playerWrapper.style.display = 'none';
+    if (elements.cryActionBtn) elements.cryActionBtn.style.display = 'inline-block';
+    if (elements.subpage) elements.subpage.style.display = 'none';
     document.body.style.overflow = 'auto';
-    
-    if (elements.homepageBg) elements.homepageBg.style.opacity = '0.35';
     if (tutorialStep > 0) terminateTutorial();
 }
 
 function playCleanVideo() {
-    elements.cryActionBtn.style.display = 'none';
-    elements.playerWrapper.style.display = 'block';
+    if (elements.cryActionBtn) elements.cryActionBtn.style.display = 'none';
+    if (elements.playerWrapper) elements.playerWrapper.style.display = 'block';
     
-    if (isPlayerReady && nativePlayer) {
+    if (isPlayerReady && nativePlayer && typeof nativePlayer.play === 'function') {
         nativePlayer.play();
         triggerCenterFlash('play');
         resetControlsTimeout();
     }
 
     if (tutorialStep === 2) {
-        elements.cryActionBtn.classList.remove('tutorial-spotlight');
+        if (elements.cryActionBtn) elements.cryActionBtn.classList.remove('tutorial-spotlight');
         terminateTutorial();
-        setTimeout(() => {
-            showToast("🎉 Tutorial Completed Successfully!");
-        }, 500);
+        setTimeout(() => { showToast("🎉 Tutorial Completed Successfully!"); }, 500);
     }
 }
 
@@ -271,18 +349,18 @@ function startTrackingProgressLoop() {
         const duration = nativePlayer.duration || 0;
         
         let bufferedEnd = 0;
-        if (nativePlayer.buffered.length > 0) {
+        if (nativePlayer.buffered && nativePlayer.buffered.length > 0) {
             bufferedEnd = nativePlayer.buffered.end(nativePlayer.buffered.length - 1);
         }
 
-        elements.timeLabelLeft.textContent = formatTime(current);
-        elements.timeLabelRight.textContent = formatTime(duration - current);
+        if (elements.timeLabelLeft) elements.timeLabelLeft.textContent = formatTime(current);
+        if (elements.timeLabelRight) elements.timeLabelRight.textContent = formatTime(duration - current);
 
         if (duration > 0) {
             const pct = (current / duration) * 100;
-            elements.progressFill.style.width = `${pct}%`;
-            elements.progressThumb.style.left = `${pct}%`;
-            elements.progressBuffer.style.width = `${(bufferedEnd / duration) * 100}%`;
+            if (elements.progressFill) elements.progressFill.style.width = `${pct}%`;
+            if (elements.progressThumb) elements.progressThumb.style.left = `${pct}%`;
+            if (elements.progressBuffer) elements.progressBuffer.style.width = `${(bufferedEnd / duration) * 100}%`;
         }
     }, 200);
 }
@@ -305,24 +383,24 @@ function handleVolumeSlider(e) {
     updateVolumeIcon(vol, vol === 0);
 }
 
-// Controls visual states modifications for muting audio elements
 function toggleMuteState() {
     if (!isPlayerReady || !nativePlayer) return;
     nativePlayer.muted = !nativePlayer.muted;
     
     if (nativePlayer.muted) {
-        elements.volSlider.value = 0;
+        if (elements.volSlider) elements.volSlider.value = 0;
         updateVolumeIcon(0, true);
         showToast("Audio Muted");
     } else {
         const currentVol = Math.round(nativePlayer.volume * 100) || 50;
-        elements.volSlider.value = currentVol;
+        if (elements.volSlider) elements.volSlider.value = currentVol;
         updateVolumeIcon(currentVol, false);
         showToast("Audio Unmuted");
     }
 }
 
 function updateVolumeIcon(vol, isMuted) {
+    if (!elements.btnMute) return;
     let svgContent = '';
     if (isMuted || vol === 0) {
         svgContent = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM4 9v6h4l5 5V4L8 9H4zm15.5 3c0 3.12-1.93 5.79-4.7 6.88v2.1c3.89-1.16 6.7-4.75 6.7-9s-2.81-7.84-6.7-9v2.1c2.77 1.09 4.7 3.76 4.7 6.88z" fill="white"/><line x1="3" y1="3" x2="21" y2="21" stroke="white" stroke-width="2"/>';
@@ -337,15 +415,16 @@ function updateVolumeIcon(vol, isMuted) {
 function togglePlayPause() {
     if (!isPlayerReady || !nativePlayer) return;
     if (nativePlayer.paused) {
-        nativePlayer.play();
+        if (typeof nativePlayer.play === 'function') nativePlayer.play();
         triggerCenterFlash('play');
     } else {
-        nativePlayer.pause();
+        if (typeof nativePlayer.pause === 'function') nativePlayer.pause();
         triggerCenterFlash('pause');
     }
 }
 
 function updatePlayPauseButton(isPlaying) {
+    if (!elements.btnPlayPause) return;
     let path = isPlaying ? 
         '<rect x="6" y="4" width="4" height="16" rx="1" fill="white"/><rect x="14" y="4" width="4" height="16" rx="1" fill="white"/>' : 
         '<path d="M8 5v14l11-7z" fill="white"/>';
@@ -353,11 +432,10 @@ function updatePlayPauseButton(isPlaying) {
 }
 
 function handleProgressScrub(e) {
-    if (!isPlayerReady || !nativePlayer || isControlsLocked) return;
+    if (!isPlayerReady || !nativePlayer || isControlsLocked || !elements.progressWrap) return;
     const rect = elements.progressWrap.getBoundingClientRect();
     const clickX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-    
     const duration = nativePlayer.duration || 0;
     if (duration > 0) {
         nativePlayer.currentTime = percentage * duration;
@@ -366,6 +444,7 @@ function handleProgressScrub(e) {
 
 function toggleInterfaceLock() {
     isControlsLocked = !isControlsLocked;
+    if (!elements.btnLock || !elements.lockOverlay) return;
     if (isControlsLocked) {
         elements.btnLock.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
         elements.lockOverlay.classList.add('active');
@@ -385,12 +464,14 @@ function handleLockedOverlayClick() {
 }
 
 function showLockToast(msg) {
+    if (!elements.lockToast) return;
     elements.lockToast.textContent = msg;
     elements.lockToast.classList.add('show');
     setTimeout(() => elements.lockToast.classList.remove('show'), 2000);
 }
 
 function toggleSubPopup() {
+    if (!elements.subPopup) return;
     closeActivePopups(elements.subPopup);
     elements.subPopup.classList.toggle('visible');
     trackActivePopup(elements.subPopup);
@@ -401,234 +482,215 @@ function selectSubtitle(track) {
     document.querySelectorAll('#subPopup .popup-row').forEach(row => {
         row.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
     showToast(`Subtitles set to: ${track.toUpperCase()}`);
-    elements.subPopup.classList.remove('visible');
+    if (elements.subPopup) elements.subPopup.classList.remove('visible');
 }
 
+// Set up background cast listeners safely
 function initCastFramework() {
-    window.__onGCastApiAvailable = function(isAvailable) {
-        if (isAvailable && window.cast) {
-            castContext = cast.framework.CastContext.getInstance();
-            castContext.setOptions({
-                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-            });
-        }
-    };
+window.__onGCastApiAvailable = function(isAvailable) {
+if (isAvailable && window.cast) {
+castContext = cast.framework.CastContext.getInstance();
+castContext.setOptions({
+receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+});
 }
-
+};
+}
 function toggleCastPopup() {
-    closeActivePopups(elements.castPopup);
-    elements.castPopup.classList.toggle('visible');
-    trackActivePopup(elements.castPopup);
-    if (elements.castPopup.classList.contains('visible')) {
-        renderMockCastDevices();
-    }
+if (!elements.castPopup) return;
+closeActivePopups(elements.castPopup);
+elements.castPopup.classList.toggle('visible');
+trackActivePopup(elements.castPopup);
+if (elements.castPopup.classList.contains('visible')) {
+renderMockCastDevices();
 }
-
+}
 function renderMockCastDevices() {
-    elements.castDeviceList.innerHTML = `
-        <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div>
-        <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>
-    `;
-    elements.castStatusText.textContent = "Select target cast asset vector link";
+if (elements.castDeviceList) {
+elements.castDeviceList.innerHTML = <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div> <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>;
 }
-
+if (elements.castStatusText) elements.castStatusText.textContent = "Select target cast asset vector link";
+}
 function connectToMockDevice(deviceName) {
-    isCasting = true;
-    elements.btnCast.classList.add('casting');
-    elements.castPopup.classList.remove('visible');
-    if (nativePlayer && isPlayerReady) nativePlayer.pause();
-    showToast(`Casting connection initialized -> ${deviceName}`);
+isCasting = true;
+if (elements.btnCast) elements.btnCast.classList.add('casting');
+if (elements.castPopup) elements.castPopup.classList.remove('visible');
+if (nativePlayer && isPlayerReady && typeof nativePlayer.pause === 'function') nativePlayer.pause();
+showToast(Casting connection initialized -> ${deviceName});
 }
-
 function trackActivePopup(pop) {
-    activePopup = pop.classList.contains('visible') ? pop : null;
+activePopup = pop.classList.contains('visible') ? pop : null;
 }
-
 function closeActivePopups(exclude = null) {
-    if (activePopup && activePopup !== exclude) {
-        activePopup.classList.remove('visible');
-        activePopup = null;
-    }
+if (activePopup && activePopup !== exclude) {
+activePopup.classList.remove('visible');
+activePopup = null;
 }
-
-// Global UI toast messages engine
+}
 function showToast(msg) {
-    elements.toast.textContent = msg;
-    elements.toast.style.opacity = '1';
-    setTimeout(() => { elements.toast.style.opacity = '0'; }, 3000);
+if (!elements.toast) return;
+elements.toast.textContent = msg;
+elements.toast.style.opacity = '1';
+setTimeout(() => { elements.toast.style.opacity = '0'; }, 3000);
 }
-
 let lastTapTimestamp = 0;
 function handleOverlayClickGesture(e) {
-    if (isControlsLocked) {
-        handleLockedOverlayClick();
-        return;
-    }
-    closeActivePopups();
-
-    const timestamp = new Date().getTime();
-    const tapDelay = timestamp - lastTapTimestamp;
-    const containerWidth = elements.videoContainer.clientWidth;
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    const clickX = clientX - elements.videoContainer.getBoundingClientRect().left;
-
-    if (tapDelay < 300 && tapDelay > 0) {
-        if (clickX < containerWidth / 2) {
-            performDoubleTapSeek('left');
-        } else {
-            performDoubleTapSeek('right');
-        }
-        lastTapTimestamp = 0;
-    } else {
-        lastTapTimestamp = timestamp;
-        setTimeout(() => {
-            if (lastTapTimestamp === timestamp) {
-                toggleControlsBarVisibility();
-            }
-        }, 300);
-    }
+if (isControlsLocked) {
+handleLockedOverlayClick();
+return;
 }
-
+closeActivePopups();
+const timestamp = new Date().getTime();
+const tapDelay = timestamp - lastTapTimestamp;
+const containerWidth = elements.videoContainer ? elements.videoContainer.clientWidth : window.innerWidth;
+const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+const clickX = clientX - (elements.videoContainer ? elements.videoContainer.getBoundingClientRect().left : 0);
+if (tapDelay < 300 && tapDelay > 0) {
+if (clickX < containerWidth / 2) {
+performDoubleTapSeek('left');
+} else {
+performDoubleTapSeek('right');
+}
+lastTapTimestamp = 0;
+} else {
+lastTapTimestamp = timestamp;
+setTimeout(() => {
+if (lastTapTimestamp === timestamp) {
+toggleControlsBarVisibility();
+}
+}, 300);
+}
+}
 function performDoubleTapSeek(direction) {
-    if (!isPlayerReady || !nativePlayer) return;
-    const currentTime = nativePlayer.currentTime || 0;
-    if (direction === 'left') {
-        nativePlayer.currentTime = Math.max(0, currentTime - 10);
-        animateSeekFlash(elements.flashLeft);
-    } else {
-        nativePlayer.currentTime = Math.min(nativePlayer.duration, currentTime + 10);
-        animateSeekFlash(elements.flashRight);
-    }
+if (!isPlayerReady || !nativePlayer) return;
+const currentTime = nativePlayer.currentTime || 0;
+if (direction === 'left') {
+nativePlayer.currentTime = Math.max(0, currentTime - 10);
+animateSeekFlash(elements.flashLeft);
+} else {
+nativePlayer.currentTime = Math.min(nativePlayer.duration || 0, currentTime + 10);
+animateSeekFlash(elements.flashRight);
 }
-
+}
 function animateSeekFlash(el) {
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 650);
+if (!el) return;
+el.classList.add('show');
+setTimeout(() => el.classList.remove('show'), 650);
 }
-
-// Shows centralized action icons for play / pause overlays
 function triggerCenterFlash(type) {
-    if (type === 'play') {
-        elements.cfPlay.style.display = 'block';
-        elements.cfPause.style.display = 'none';
-    } else {
-        elements.cfPlay.style.display = 'none';
-        elements.cfPause.style.display = 'block';
-    }
-    elements.centerFlash.classList.add('show');
-    setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
+if (!elements.centerFlash || !elements.cfPlay || !elements.cfPause) return;
+if (type === 'play') {
+elements.cfPlay.style.display = 'block';
+elements.cfPause.style.display = 'none';
+} else {
+elements.cfPlay.style.display = 'none';
+elements.cfPause.style.display = 'block';
 }
-
-// Controls visibility layers state modifications
+elements.centerFlash.classList.add('show');
+setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
+}
 function toggleControlsBarVisibility() {
-    if (elements.videoContainer.classList.contains('controls-hidden')) {
-        showControlsBar();
-    } else {
-        hideControlsBar();
-    }
+if (!elements.videoContainer) return;
+if (elements.videoContainer.classList.contains('controls-hidden')) {
+showControlsBar();
+} else {
+hideControlsBar();
 }
-
+}
 function showControlsBar() {
-    elements.videoContainer.classList.remove('controls-hidden');
-    resetControlsTimeout();
+if (elements.videoContainer) elements.videoContainer.classList.remove('controls-hidden');
+resetControlsTimeout();
 }
-
 function hideControlsBar() {
-    if (isPlayerReady && nativePlayer && !nativePlayer.paused) {
-        elements.videoContainer.classList.add('controls-hidden');
-        closeActivePopups();
-    }
+if (elements.videoContainer && isPlayerReady && nativePlayer && !nativePlayer.paused) {
+elements.videoContainer.classList.add('controls-hidden');
+closeActivePopups();
 }
-
+}
 function resetControlsTimeout() {
-    clearTimeout(controlsTimeout);
-    if (isControlsLocked) return;
-    controlsTimeout = setTimeout(() => {
-        hideControlsBar();
-    }, 3500);
+clearTimeout(controlsTimeout);
+if (isControlsLocked) return;
+controlsTimeout = setTimeout(() => {
+hideControlsBar();
+}, 3500);
 }
-
 function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        elements.playerWrapper.requestFullscreen().catch(err => {
-            showToast("Error establishing fullscreen environment");
-        });
-    } else {
-        document.exitFullscreen();
-    }
+if (!elements.playerWrapper) return;
+if (!document.fullscreenElement) {
+elements.playerWrapper.requestFullscreen().catch(err => {
+showToast("Error establishing fullscreen environment");
+});
+} else {
+document.exitFullscreen();
 }
-
-// Registers structural mouse, scroll, keyboard, and layout track boundaries
+}
 function setupInteractiveEventListeners() {
-    elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
-    elements.volSlider.addEventListener('input', handleVolumeSlider);
-    
-    let isDraggingScrub = false;
-    
-    const startScrub = (e) => {
-        if (isControlsLocked) return;
-        isDraggingScrub = true;
-        handleProgressScrub(e);
-    };
-    const moveScrub = (e) => {
-        if (isDraggingScrub) handleProgressScrub(e);
-    };
-    const endScrub = () => { isDraggingScrub = false; };
-
-    elements.progressWrap.addEventListener('mousedown', startScrub);
-    window.addEventListener('mousemove', moveScrub);
-    window.addEventListener('mouseup', endScrub);
-
-    elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
-    window.addEventListener('touchmove', moveScrub, {passive: true});
-    window.addEventListener('touchend', endScrub);
-
-    window.addEventListener('resize', () => {
-        if (tutorialStep > 0) positionTutorialBubble();
-    });
-
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            if (tutorialStep > 0) positionTutorialBubble();
-        }, 200);
-    });
-
-    window.addEventListener('keydown', (e) => {
-        if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
-        if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
-
-        switch(e.key.toLowerCase()) {
-            case ' ':
-            case 'k':
-                e.preventDefault();
-                togglePlayPause();
-                break;
-            case 'f':
-                e.preventDefault();
-                toggleFullscreen();
-                break;
-            case 'm':
-                e.preventDefault();
-                toggleMuteState();
-                break;
-            case 'l':
-                e.preventDefault();
-                toggleInterfaceLock();
-                break;
-            case 'arrowleft':
-            case 'j':
-                e.preventDefault();
-                performDoubleTapSeek('left');
-                showControlsBar();
-                break;
-            case 'arrowright':
-                e.preventDefault();
-                performDoubleTapSeek('right');
-                showControlsBar();
-                break;
-        }
-    });
+if (elements.clickOverlay) elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
+if (elements.volSlider) elements.volSlider.addEventListener('input', handleVolumeSlider);
+if (elements.animeCard) elements.animeCard.addEventListener('click', openSubpage);
+if (elements.cryActionBtn) elements.cryActionBtn.addEventListener('click', playCleanVideo);
+if (elements.btnPlayPause) elements.btnPlayPause.addEventListener('click', togglePlayPause);
+if (elements.btnMute) elements.btnMute.addEventListener('click', toggleMuteState);
+if (elements.btnLock) elements.btnLock.addEventListener('click', toggleInterfaceLock);
+let isDraggingScrub = false;
+const startScrub = (e) => {
+if (isControlsLocked) return;
+isDraggingScrub = true;
+handleProgressScrub(e);
+};
+const moveScrub = (e) => {
+if (isDraggingScrub) handleProgressScrub(e);
+};
+const endScrub = () => { isDraggingScrub = false; };
+if (elements.progressWrap) {
+elements.progressWrap.addEventListener('mousedown', startScrub);
+elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
 }
+window.addEventListener('mousemove', moveScrub);
+window.addEventListener('mouseup', endScrub);
+window.addEventListener('touchmove', moveScrub, {passive: true});
+window.addEventListener('touchend', endScrub);
+window.addEventListener('resize', () => {
+if (tutorialStep > 0) positionTutorialBubble();
+});
+window.addEventListener('keydown', (e) => {
+if (!elements.subpage || elements.subpage.style.display !== 'block') return;
+if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
+switch(e.key.toLowerCase()) {
+case ' ':
+case 'k':
+e.preventDefault();
+togglePlayPause();
+break;
+case 'f':
+e.preventDefault();
+toggleFullscreen();
+break;
+case 'm':
+e.preventDefault();
+toggleMuteState();
+break;
+case 'l':
+e.preventDefault();
+toggleInterfaceLock();
+break;
+case 'arrowleft':
+case 'j':
+e.preventDefault();
+performDoubleTapSeek('left');
+showControlsBar();
+break;
+case 'arrowright':
+e.preventDefault();
+performDoubleTapSeek('right');
+showControlsBar();
+break;
+}
+});
+}
+```
+
+```
