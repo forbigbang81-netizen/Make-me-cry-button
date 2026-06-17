@@ -545,5 +545,63 @@ function setupInteractiveEventListeners() {
         if (isDraggingScrub) handleProgressScrub(e);
     };
     const endScrub = () => { isDraggingScrub = false; };
+    // ... continuous from window.addEventListener('touchend', endScrub);
+
+    // Recalculate spotlight geometry boundaries dynamically when layout updates
+    window.addEventListener('resize', () => {
+        if (tutorialStep > 0) positionTutorialBubble();
+    });
+
+    // Device orientation matrix modifications listener
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            if (tutorialStep > 0) positionTutorialBubble();
+        }, 200);
+    });
+
+    // Keyboard Macro Vector Intercept Mapping Controls
+    window.addEventListener('keydown', (e) => {
+        // Prevent key interception if subpage or video player frame hidden from viewport view
+        if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
+        
+        // Block all interaction sequences except the interface lock key command if system is restricted
+        if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
+
+        switch(e.key.toLowerCase()) {
+            case ' ':
+            case 'k':
+                e.preventDefault();
+                togglePlayPause();
+                break;
+            case 'f':
+                e.preventDefault();
+                toggleFullscreen();
+                break;
+            case 'm':
+                e.preventDefault();
+                toggleMuteState();
+                break;
+            case 'l':
+                e.preventDefault();
+                toggleInterfaceLock();
+                break;
+            case 'arrowleft':
+            case 'j':
+                e.preventDefault();
+                performDoubleTapSeek('left');
+                showControlsBar();
+                break;
+            case 'arrowright':
+            case 'l':
+                // Only process seek if not conflicting with the control layout toggle key mapping
+                if (e.key.toLowerCase() === 'arrowright') {
+                    e.preventDefault();
+                    performDoubleTapSeek('right');
+                    showControlsBar();
+                }
+                break;
+        }
+    });
+}
 
  
