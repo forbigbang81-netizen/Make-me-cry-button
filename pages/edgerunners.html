@@ -11,142 +11,173 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
 </head>
 <body>
+
   <div class="scanlines"></div>
   <div class="noise"></div>
 
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="../index.html" class="back-btn">
-        <span class="back-arrow">◄</span>
-        <span>BACK TO VAULT</span>
-      </a>
-      <div class="logo">
-        <span class="logo-bracket">[</span>
-        <span class="logo-text">NIGHT CITY</span>
-        <span class="logo-bracket">]</span>
-      </div>
-    </div>
-    <div class="header-line"></div>
-  </header>
+  <!-- ═══════════════════════════════════════
+       GATE SCREEN — shown first, hides after cry
+  ════════════════════════════════════════ -->
+  <div id="gateScreen" class="gate-screen">
+    <div class="gate-bg" id="gateBg"></div>
+    <div class="gate-vignette"></div>
 
-  <main class="detail-main">
-    <!-- Hero Video Section -->
-    <section class="video-section">
-      <div class="video-label">
+    <a href="../index.html" class="gate-back">&#9664; VAULT</a>
+
+    <div class="gate-center">
+      <div class="gate-eyebrow">
         <span class="blink-dot"></span>
-        NEURAL FEED :: LIVE STREAM
+        CLASSIFIED STREAM // EDGERUNNERS_OST.mkv
+      </div>
+      <h1 class="gate-title" id="gateTitle">CYBERPUNK<br><span class="gate-title-sub">EDGERUNNERS</span></h1>
+
+      <div class="gate-meta" id="gateMeta">
+        <span id="gMetaEps">10 EPS</span>
+        <span class="gate-sep">|</span>
+        <span id="gMetaScore">&#9733; 8.71</span>
+        <span class="gate-sep">|</span>
+        <span id="gMetaYear">2022</span>
       </div>
 
-      <div class="player-wrap" id="playerWrap">
-        <div class="player-chrome">
-          <div class="player-chrome-top">
-            <span class="chrome-dot red"></span>
-            <span class="chrome-dot yellow"></span>
-            <span class="chrome-dot green"></span>
-            <span class="chrome-title">EDGERUNNERS_OST_STREAM.mkv</span>
+      <button class="gate-cry-btn" id="gateCryBtn">
+        <span class="gate-cry-inner">
+          <span class="gate-cry-text">MAKE ME CRY</span>
+          <span class="gate-cry-sub">// INITIATE FEEL PROTOCOL</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- Cry text panel — shown inline before video launches -->
+    <div class="gate-cry-panel" id="gateCryPanel">
+      <div class="gcp-inner" id="gcpInner"></div>
+      <div class="gcp-skip" id="gcpSkip">[ PRESS ANYWHERE TO CONTINUE ]</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       VIDEO PAGE — revealed after gate
+  ════════════════════════════════════════ -->
+  <div id="videoPage" class="video-page hidden">
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="../index.html" class="back-btn">&#9664; BACK TO VAULT</a>
+        <div class="logo">
+          <span class="logo-bracket">[</span>
+          <span class="logo-text">NIGHT CITY</span>
+          <span class="logo-bracket">]</span>
+        </div>
+      </div>
+      <div class="header-line"></div>
+    </header>
+
+    <main class="detail-main">
+
+      <!-- Player -->
+      <section class="video-section">
+        <div class="video-label">
+          <span class="blink-dot"></span>
+          NEURAL FEED :: LIVE STREAM
+        </div>
+
+        <div class="player-wrap" id="playerWrap">
+
+          <!-- Title bar -->
+          <div class="player-titlebar">
+            <div class="titlebar-left">
+              <span class="titlebar-sig">NC</span>
+              <span class="titlebar-file">EDGERUNNERS_OST_STREAM.mkv</span>
+            </div>
+            <div class="titlebar-right">
+              <span class="titlebar-status" id="titlebarStatus">STOPPED</span>
+            </div>
           </div>
 
+          <!-- Video -->
           <div class="video-container" id="videoContainer">
             <iframe
               id="ytPlayer"
-              src="https://www.youtube.com/embed/KvMY1uzSC1E?enablejsapi=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white"
+              src="https://www.youtube.com/embed/KvMY1uzSC1E?enablejsapi=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&autoplay=0"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
               title="Cyberpunk Edgerunners OST"
             ></iframe>
-            <div class="video-overlay" id="videoOverlay">
-              <button class="play-btn-big" id="bigPlayBtn" aria-label="Play">
-                <span class="play-icon">▶</span>
-              </button>
-            </div>
           </div>
 
-          <!-- Custom Controls -->
-          <div class="player-controls" id="playerControls">
-            <div class="progress-bar-wrap" id="progressWrap">
-              <div class="progress-track">
-                <div class="progress-fill" id="progressFill"></div>
-                <div class="progress-thumb" id="progressThumb"></div>
+          <!-- Controls bar -->
+          <div class="player-controls">
+
+            <!-- Scrubber row -->
+            <div class="scrubber-row">
+              <span class="time-val" id="timeCurrent">0:00</span>
+              <div class="scrubber-track" id="scrubberTrack">
+                <div class="scrubber-fill" id="scrubberFill"></div>
+                <div class="scrubber-head" id="scrubberHead"></div>
               </div>
-              <div class="time-stamps">
-                <span id="timeCurrent">0:00</span>
-                <span id="timeDuration">--:--</span>
-              </div>
+              <span class="time-val" id="timeDuration">--:--</span>
             </div>
 
-            <div class="controls-row">
-              <div class="controls-left">
-                <button class="ctrl-btn" id="playPauseBtn" aria-label="Play/Pause">
-                  <span id="playIcon">▶</span>
-                </button>
-                <button class="ctrl-btn" id="muteBtn" aria-label="Mute">
-                  <span id="muteIcon">🔊</span>
-                </button>
-                <div class="volume-wrap">
-                  <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="80" aria-label="Volume" />
+            <!-- Buttons row -->
+            <div class="ctrl-row">
+
+              <div class="ctrl-group">
+                <!-- Play/Pause as text toggle -->
+                <button class="ctrl-text-btn" id="playPauseBtn">PLAY</button>
+
+                <!-- Volume: text label + step buttons + level display -->
+                <div class="vol-group">
+                  <span class="vol-label">VOL</span>
+                  <button class="vol-step" id="volDown">-</button>
+                  <div class="vol-pips" id="volPips">
+                    <!-- 10 pips injected by JS -->
+                  </div>
+                  <button class="vol-step" id="volUp">+</button>
+                  <span class="vol-num" id="volNum">80</span>
                 </div>
               </div>
-              <div class="controls-right">
-                <span class="quality-tag">4K · DOLBY</span>
-                <button class="ctrl-btn" id="fullscreenBtn" aria-label="Fullscreen">⛶</button>
+
+              <div class="ctrl-group ctrl-group-right">
+                <span class="ctrl-tag">OST</span>
+                <button class="ctrl-text-btn ctrl-fs-btn" id="fullscreenBtn">FS</button>
               </div>
+
             </div>
           </div>
+
+          <!-- Corner marks -->
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
         </div>
+      </section>
 
-        <!-- VHS decorative elements -->
-        <div class="vhs-corner top-left"></div>
-        <div class="vhs-corner top-right"></div>
-        <div class="vhs-corner bottom-left"></div>
-        <div class="vhs-corner bottom-right"></div>
-      </div>
-    </section>
-
-    <!-- Anime Info Section -->
-    <section class="info-section" id="infoSection">
-      <div class="info-grid">
-        <div class="info-poster-col">
-          <div class="poster-wrap">
-            <img id="animePoster" src="" alt="Cyberpunk Edgerunners Poster" />
-            <div class="poster-glitch-bar"></div>
+      <!-- Anime Info -->
+      <section class="info-section">
+        <div class="info-grid">
+          <div class="info-poster-col">
+            <div class="poster-wrap">
+              <img id="animePoster" src="" alt="Cyberpunk Edgerunners Poster" />
+              <div class="poster-glitch-bar"></div>
+            </div>
+          </div>
+          <div class="info-content-col">
+            <div class="series-eyebrow">CLASSIFIED FILE :: MAL_ID #42310</div>
+            <h1 class="series-title" id="seriesTitle">CYBERPUNK: EDGERUNNERS</h1>
+            <div class="series-meta">
+              <span class="meta-tag" id="metaEps">— EPS</span>
+              <span class="meta-tag" id="metaScore">— SCORE</span>
+              <span class="meta-tag" id="metaYear">— YEAR</span>
+              <span class="meta-tag" id="metaStudio">— STUDIO</span>
+            </div>
+            <p class="series-synopsis" id="seriesSynopsis">Loading neural feed...</p>
           </div>
         </div>
+      </section>
 
-        <div class="info-content-col">
-          <div class="series-eyebrow">CLASSIFIED FILE :: MAL_ID #42310</div>
-          <h1 class="series-title" id="seriesTitle">CYBERPUNK: EDGERUNNERS</h1>
-          <div class="series-meta" id="seriesMeta">
-            <span class="meta-tag" id="metaEps">— EPS</span>
-            <span class="meta-tag" id="metaScore">— SCORE</span>
-            <span class="meta-tag" id="metaYear">— YEAR</span>
-            <span class="meta-tag" id="metaStudio">— STUDIO</span>
-          </div>
-          <p class="series-synopsis" id="seriesSynopsis">Loading neural feed...</p>
-
-          <!-- THE CRY BUTTON -->
-          <div class="cry-section">
-            <div class="cry-label">// EMOTIONAL_OVERRIDE.exe</div>
-            <button class="cry-btn" id="cryBtn">
-              <span class="cry-btn-text">MAKE ME CRY</span>
-              <span class="cry-btn-sub">[ INITIATE FEEL PROTOCOL ]</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Cry modal -->
-    <div class="cry-modal" id="cryModal">
-      <div class="cry-modal-inner">
-        <button class="modal-close" id="modalClose">✕</button>
-        <div class="modal-content" id="modalContent">
-          <!-- injected by JS -->
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop" id="modalBackdrop"></div>
-  </main>
+    </main>
+  </div>
 
   <script src="../js/player.js"></script>
   <script src="../js/detail.js"></script>
