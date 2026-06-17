@@ -157,9 +157,25 @@ function bindControls() {
     });
   }
 
-  /* Fullscreen */
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  /* Fullscreen + landscape lock */
+  const fullscreenBtn  = document.getElementById('fullscreenBtn');
   const videoContainer = document.getElementById('videoContainer');
+
+  function lockLandscape() {
+    // Screen Orientation API (mobile/modern browsers)
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(() => {
+        // Browser may deny on desktop — silently ignore
+      });
+    }
+  }
+
+  function unlockOrientation() {
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
+  }
+
   if (fullscreenBtn && videoContainer) {
     fullscreenBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
@@ -168,6 +184,15 @@ function bindControls() {
         });
       } else {
         document.exitFullscreen();
+      }
+    });
+
+    // Lock to landscape when entering fullscreen, unlock on exit
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement === videoContainer) {
+        lockLandscape();
+      } else {
+        unlockOrientation();
       }
     });
   }
