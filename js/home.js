@@ -1,73 +1,123 @@
 /* ═══════════════════════════════════════════
    HOME.JS — Fetch Edgerunners via Jikan API
-   MAL ID: 42310 (Cyberpunk: Edgerunners)
+   PS browser compatible: no async/await,
+   no optional chaining, no arrow fn defaults
 ═══════════════════════════════════════════ */
 
-const EDGERUNNERS_ID = 42310;
-const JIKAN_BASE = 'https://api.jikan.moe/v4';
+var EDGERUNNERS_ID = 42310;
+var JIKAN_BASE = 'https://api.jikan.moe/v4';
 
-async function fetchEdgerunners() {
-  try {
-    const res = await fetch(`${JIKAN_BASE}/anime/${EDGERUNNERS_ID}`);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    const json = await res.json();
-    return json.data;
-  } catch (err) {
-    console.error('Failed to fetch from Jikan:', err);
-    return null;
+/* ── Fallback static data (always works) ─── */
+var FALLBACK = {
+  title_english: 'Cyberpunk: Edgerunners',
+  title: 'Cyberpunk: Edgerunners',
+  score: 8.71,
+  episodes: 10,
+  year: 2022,
+  studio: 'Trigger',
+  image: 'https://cdn.myanimelist.net/images/anime/1818/126435l.jpg'
+};
+
+function getImage(anime) {
+  if (!anime) return FALLBACK.image;
+  if (anime.images && anime.images.jpg) {
+    return anime.images.jpg.large_image_url || anime.images.jpg.image_url || FALLBACK.image;
   }
+  return FALLBACK.image;
+}
+
+function getStudio(anime) {
+  if (!anime) return FALLBACK.studio;
+  if (anime.studios && anime.studios.length > 0 && anime.studios[0].name) {
+    return anime.studios[0].name;
+  }
+  return FALLBACK.studio;
+}
+
+function getYear(anime) {
+  if (!anime) return FALLBACK.year;
+  if (anime.year) return anime.year;
+  if (anime.aired && anime.aired.from) {
+    return new Date(anime.aired.from).getFullYear();
+  }
+  return FALLBACK.year;
 }
 
 function buildCard(anime) {
-  const title = anime.title_english || anime.title;
-  const image = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
-  const score = anime.score ? `★ ${anime.score}` : '★ N/A';
-  const episodes = anime.episodes ? `${anime.episodes} EPS` : 'ONGOING';
-  const year = anime.year || (anime.aired?.from ? new Date(anime.aired.from).getFullYear() : '—');
-  const studio = anime.studios?.[0]?.name || 'UNKNOWN';
+  var title    = (anime && (anime.title_english || anime.title)) || FALLBACK.title_english;
+  var image    = getImage(anime);
+  var score    = (anime && anime.score) ? '\u2605 ' + anime.score : '\u2605 ' + FALLBACK.score;
+  var episodes = (anime && anime.episodes) ? anime.episodes + ' EPS' : FALLBACK.episodes + ' EPS';
+  var year     = getYear(anime);
+  var studio   = getStudio(anime);
 
-  const card = document.createElement('a');
+  var card = document.createElement('a');
   card.className = 'anime-card';
   card.href = 'pages/edgerunners.html';
-  card.setAttribute('aria-label', `View ${title}`);
+  card.setAttribute('aria-label', 'View ' + title);
 
-  card.innerHTML = `
-    <div class="card-img-wrap">
-      <img src="${image}" alt="${title} key visual" loading="lazy" />
-      <div class="card-img-overlay"></div>
-      <div class="card-corner-tag">FEATURED</div>
-    </div>
-    <div class="card-body">
-      <div class="card-score">${score} &nbsp;·&nbsp; <span class="accent-gold">${year}</span></div>
-      <div class="card-title">${title.toUpperCase()}</div>
-      <div class="card-meta">
-        <span>${episodes}</span>
-        <span>${studio}</span>
-      </div>
-    </div>
-    <div class="card-cta">ENTER FILE ▶</div>
-  `;
+  card.innerHTML =
+    '<div class="card-img-wrap">' +
+      '<img src="' + image + '" alt="' + title + ' key visual" />' +
+      '<div class="card-img-overlay"></div>' +
+      '<div class="card-corner-tag">FEATURED</div>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="card-score">' + score + ' &nbsp;&middot;&nbsp; <span class="accent-gold">' + year + '</span></div>' +
+      '<div class="card-title">' + title.toUpperCase() + '</div>' +
+      '<div class="card-meta">' +
+        '<span>' + episodes + '</span>' +
+        '<span>' + studio + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card-cta">ENTER FILE &#9654;</div>';
 
   return card;
 }
 
-async function init() {
-  const grid = document.getElementById('cardGrid');
-  const anime = await fetchEdgerunners();
-
-  // Remove skeleton
+function renderCard(anime) {
+  var grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-
-  if (!anime) {
-    grid.innerHTML = `
-      <div style="color:var(--dimtext); font-size:0.8rem; letter-spacing:0.1em; padding:2rem 0;">
-        [ NEURAL FEED OFFLINE — API UNREACHABLE ]
-      </div>`;
-    return;
-  }
-
-  const card = buildCard(anime);
-  grid.appendChild(card);
+  grid.appendChild(buildCard(anime));
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function renderFallback() {
+  var grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  grid.appendChild(buildCard(null));
+}
+
+function init() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', JIKAN_BASE + '/anime/' + EDGERUNNERS_ID, true);
+  xhr.timeout = 8000;
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status >= 200 && xhr.status < 300) {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        renderCard(data.data || null);
+      } catch (e) {
+        renderFallback();
+      }
+    } else {
+      renderFallback();
+    }
+  };
+
+  xhr.ontimeout = function () { renderFallback(); };
+  xhr.onerror   = function () { renderFallback(); };
+
+  try {
+    xhr.send();
+  } catch (e) {
+    renderFallback();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
