@@ -68,9 +68,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setupInteractiveEventListeners();
 });
 
+// Fetches asset metrics with a built-in strict network timeout guard link
 async function fetchAnimeMetadata() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5 Second maximum threshold
+
     try {
-        const response = await fetch(`https://api.jikan.moe/v4/anime/${TARGET_ANIME_ID}`);
+        const response = await fetch(`https://api.jikan.moe/v4/anime/${TARGET_ANIME_ID}`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (!response.ok) throw new Error('Network pipeline stream asset error');
         const { data } = await response.json();
 
@@ -79,22 +87,23 @@ async function fetchAnimeMetadata() {
         elements.subpageTitle.textContent = data.title;
         elements.playerTitle.textContent = data.title;
 
-        elements.loadingPanel.style.display = 'none';
-        elements.animeCard.style.display = 'block';
-        
-        // Show Tutorial Popup Choice Panel
-        setTimeout(() => {
-            elements.tutOverlay.style.display = 'flex';
-        }, 800);
     } catch (err) {
-        console.error("API error, switching to offline fallback: ", err);
+        clearTimeout(timeoutId);
+        console.warn("API gateway timed out or blocked request. Initializing structural offline fallbacks...", err);
+        
+        // Static local configurations bypasses API downtime
         elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
         elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
+        elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
+        elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
+    } finally {
+        // Ensures the panel is dropped cleanly regardless of server conditions
         elements.loadingPanel.style.display = 'none';
         elements.animeCard.style.display = 'block';
         
+        // Trigger onboarding walkthrough interface sequence
         setTimeout(() => {
-            elements.tutOverlay.style.display = 'flex';
+            if(elements.tutOverlay) elements.tutOverlay.style.display = 'flex';
         }, 800);
     }
 }
@@ -103,7 +112,6 @@ async function fetchAnimeMetadata() {
 function handleTutorialChoice(wantsTutorial) {
     elements.tutPrompt.style.display = 'none';
     if (wantsTutorial) {
-        // Change default behavior from 'block' to 'initial' so pointer events function smoothly
         elements.tutOverlay.style.display = 'initial';
         startTutorialSequence();
     } else {
@@ -115,8 +123,6 @@ function startTutorialSequence() {
     tutorialStep = 1;
     elements.tutBubble.style.display = 'block';
     elements.tutText.textContent = "Click the card";
-    
-    // Hide the skip button entirely during the first instruction step
     elements.tutSkipBtn.style.display = 'none';
     
     positionTutorialBubble();
@@ -126,21 +132,18 @@ function startTutorialSequence() {
 // Places the tutorial box perfectly aligned with target interface nodes
 function positionTutorialBubble() {
     if (tutorialStep === 1) {
-        // Attaches the prompt precisely above the top edge bounding border of the card
         const cardRect = elements.animeCard.getBoundingClientRect();
         const bubbleWidth = 280;
         
         let left = cardRect.left + (cardRect.width / 2) - (bubbleWidth / 2);
-        let top = cardRect.top - 70; // Positioned directly above screen container card asset
+        let top = cardRect.top - 70;
 
-        // Screen boundary safety logic
         if (left < 10) left = 10;
         if (top < 10) top = 10;
 
         elements.tutBubble.style.top = `${top + window.scrollY}px`;
         elements.tutBubble.style.left = `${left}px`;
     } else if (tutorialStep === 2) {
-        // Keeps near top middle segment for detail view layout
         const bubbleWidth = 280;
         let left = (window.innerWidth / 2) - (bubbleWidth / 2);
         if (left < 10) left = 10;
@@ -181,18 +184,13 @@ function openSubpage() {
     elements.subpage.style.display = 'block';
     document.body.style.overflow = 'hidden';
     
-    // Turn off/fade homepage animated background stream when viewing video player subpage
     if (elements.homepageBg) elements.homepageBg.style.opacity = '0';
 
     if (tutorialStep === 1) {
         elements.animeCard.classList.remove('tutorial-spotlight');
         tutorialStep = 2;
         elements.tutText.textContent = "Click make me cry button and cry!";
-        
-        // Bring back the skip button for step 2 if needed
         elements.tutSkipBtn.style.display = 'inline-block';
-        
-        // Temporarily shift overlay to block clicks during transition phase
         elements.tutOverlay.style.display = 'block';
         
         setTimeout(() => {
@@ -213,9 +211,7 @@ function closeSubpage() {
     elements.subpage.style.display = 'none';
     document.body.style.overflow = 'auto';
     
-    // Restore background animation loops
     if (elements.homepageBg) elements.homepageBg.style.opacity = '0.35';
-    
     if (tutorialStep > 0) terminateTutorial();
 }
 
@@ -338,7 +334,6 @@ function handleProgressScrub(e) {
     }
 }
 
-// Controls Lock State Management Mapping
 function toggleInterfaceLock() {
     isControlsLocked = !isControlsLocked;
     if (isControlsLocked) {
@@ -429,6 +424,7 @@ function closeActivePopups(exclude = null) {
     }
 }
 
+// Global UI toast messages engine
 function showToast(msg) {
     elements.toast.textContent = msg;
     elements.toast.style.opacity = '1';
@@ -483,6 +479,7 @@ function animateSeekFlash(el) {
     setTimeout(() => el.classList.remove('show'), 650);
 }
 
+// Shows centralized action icons for play / pause overlays
 function triggerCenterFlash(type) {
     if (type === 'play') {
         elements.cfPlay.style.display = 'block';
@@ -533,6 +530,7 @@ function toggleFullscreen() {
     }
 }
 
+// Registers structural mouse, scroll, keyboard, and layout track boundaries
 function setupInteractiveEventListeners() {
     elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
     elements.volSlider.addEventListener('input', handleVolumeSlider);
@@ -545,27 +543,30 @@ function setupInteractiveEventListeners() {
         handleProgressScrub(e);
     };
     const moveScrub = (e) => {
-        if (isDraggingScrub) 
-    // ... continuous from window.addEventListener('touchend', endScrub);
+        if (isDraggingScrub) handleProgressScrub(e);
+    };
+    const endScrub = () => { isDraggingS    const endScrub = () => { isDraggingScrub = false; };
 
-    // Recalculate spotlight geometry boundaries dynamically when layout updates
+    elements.progressWrap.addEventListener('mousedown', startScrub);
+    window.addEventListener('mousemove', moveScrub);
+    window.addEventListener('mouseup', endScrub);
+
+    elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
+    window.addEventListener('touchmove', moveScrub, {passive: true});
+    window.addEventListener('touchend', endScrub);
+
     window.addEventListener('resize', () => {
         if (tutorialStep > 0) positionTutorialBubble();
     });
 
-    // Device orientation matrix modifications listener
     window.addEventListener('orientationchange', () => {
         setTimeout(() => {
             if (tutorialStep > 0) positionTutorialBubble();
         }, 200);
     });
 
-    // Keyboard Macro Vector Intercept Mapping Controls
     window.addEventListener('keydown', (e) => {
-        // Prevent key interception if subpage or video player frame hidden from viewport view
         if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
-        
-        // Block all interaction sequences except the interface lock key command if system is restricted
         if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
 
         switch(e.key.toLowerCase()) {
