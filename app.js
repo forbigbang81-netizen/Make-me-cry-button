@@ -546,4 +546,7 @@ function setupInteractiveEventListeners() {
             case 'm':
                 toggleMuteState();
                 break;
+        }
+    });
+}
           
