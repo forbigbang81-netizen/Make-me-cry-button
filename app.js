@@ -78,7 +78,6 @@ async function fetchAnimeMetadata() {
         elements.cardTitle.textContent = data.title;
         elements.subpageTitle.textContent = data.title;
         elements.playerTitle.textContent = data.title;
-        elements.cardDesc.textContent = data.synopsis;
 
         elements.loadingPanel.style.display = 'none';
         elements.animeCard.style.display = 'block';
@@ -91,7 +90,6 @@ async function fetchAnimeMetadata() {
         console.error("API error, switching to offline fallback: ", err);
         elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
         elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
-        elements.cardDesc.textContent = "A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future.";
         elements.loadingPanel.style.display = 'none';
         elements.animeCard.style.display = 'block';
         
@@ -105,7 +103,8 @@ async function fetchAnimeMetadata() {
 function handleTutorialChoice(wantsTutorial) {
     elements.tutPrompt.style.display = 'none';
     if (wantsTutorial) {
-        elements.tutOverlay.style.display = 'block';
+        // Change default behavior from 'block' to 'initial' so pointer events function smoothly
+        elements.tutOverlay.style.display = 'initial';
         startTutorialSequence();
     } else {
         terminateTutorial();
@@ -193,8 +192,12 @@ function openSubpage() {
         // Bring back the skip button for step 2 if needed
         elements.tutSkipBtn.style.display = 'inline-block';
         
+        // Temporarily shift overlay to block clicks during transition phase
+        elements.tutOverlay.style.display = 'block';
+        
         setTimeout(() => {
             positionTutorialBubble();
+            elements.tutOverlay.style.display = 'initial';
             elements.cryActionBtn.classList.add('tutorial-spotlight');
         }, 350);
     }
@@ -542,9 +545,7 @@ function setupInteractiveEventListeners() {
         handleProgressScrub(e);
     };
     const moveScrub = (e) => {
-        if (isDraggingScrub) handleProgressScrub(e);
-    };
-    const endScrub = () => { isDraggingScrub = false; };
+        if (isDraggingScrub) 
     // ... continuous from window.addEventListener('touchend', endScrub);
 
     // Recalculate spotlight geometry boundaries dynamically when layout updates
@@ -592,16 +593,10 @@ function setupInteractiveEventListeners() {
                 showControlsBar();
                 break;
             case 'arrowright':
-            case 'l':
-                // Only process seek if not conflicting with the control layout toggle key mapping
-                if (e.key.toLowerCase() === 'arrowright') {
-                    e.preventDefault();
-                    performDoubleTapSeek('right');
-                    showControlsBar();
-                }
+                e.preventDefault();
+                performDoubleTapSeek('right');
+                showControlsBar();
                 break;
         }
     });
 }
-
- 
