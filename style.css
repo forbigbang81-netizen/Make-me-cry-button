@@ -273,4 +273,229 @@ body {
 
 .time-label {
     color: #fff;
-    font-size:
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 40px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.time-label.right { text-align: right; }
+
+.progress-wrap {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+    padding: 10px 0;
+    margin: -10px 0;
+}
+
+.progress-track {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    left: 0; right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.28);
+    border-radius: 2px;
+}
+
+.progress-buffer {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    background: rgba(255,255,255,0.42);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.6s;
+}
+
+.progress-fill {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    background: #e50914;
+    border-radius: 2px;
+    width: 0%;
+}
+
+.progress-thumb {
+    position: absolute;
+    top: 50%; transform: translate(-50%, -50%);
+    width: 15px; height: 15px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.7);
+    left: 0%;
+    transition: left 0.1s;
+}
+.progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1.35); }
+
+/* Button Action Matrix Line */
+.btn-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+}
+
+.left-btns, .right-btns {
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+}
+
+.ctrl-btn {
+    background: none; border: none;
+    color: #fff; cursor: pointer;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    transition: background 0.18s, transform 0.1s;
+    flex-shrink: 0;
+}
+.ctrl-btn:hover { background: rgba(255,255,255,0.14); }
+.ctrl-btn:active { transform: scale(0.88); }
+.ctrl-btn svg { display: block; margin: auto; }
+
+.play-btn {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.12);
+}
+.play-btn:hover { background: rgba(255,255,255,0.26); }
+
+/* Volume Slider Elements */
+.volume-wrap { 
+    display: flex; 
+    align-items: center;
+    gap: 4px;
+}
+.vol-slider-wrap {
+    width: 0; overflow: hidden;
+    display: flex;
+    align-items: center;
+    transition: width 0.28s ease;
+}
+.volume-wrap:hover .vol-slider-wrap,
+.volume-wrap:focus-within .vol-slider-wrap { width: 76px; }
+
+.vol-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 70px; height: 4px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px; outline: none; cursor: pointer;
+    margin: 0;
+}
+.vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.55);
+}
+
+/* Center Control Cluster */
+.center-cluster { display: flex; align-items: center; gap: 4px; }
+
+/* Seek Flash Alerts */
+.seek-flash {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    z-index: 30; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0; transition: opacity 0.18s;
+}
+.seek-flash.left  { left: 12%; }
+.seek-flash.right { right: 12%; }
+.seek-flash.show  { opacity: 1; }
+.seek-flash-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px; font-weight: 700;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
+
+/* Center Flash Controls */
+.center-flash {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    z-index: 30; pointer-events: none;
+    opacity: 0; transition: opacity 0.22s;
+}
+.center-flash.show { opacity: 1; }
+
+/* Auto Hide Layout Handles */
+.controls-hidden .top-bar,
+.controls-hidden .controls-bar { opacity: 0; pointer-events: none; }
+
+/* Lock Component Layer */
+.lock-overlay {
+    position: absolute; inset: 0;
+    z-index: 15; display: none;
+}
+.lock-overlay.active { display: block; }
+.lock-toast {
+    position: absolute;
+    bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: rgba(15,15,15,0.92);
+    color: #fff; font-size: 13px; font-weight: 500;
+    padding: 8px 18px; border-radius: 20px;
+    white-space: nowrap; opacity: 0; transition: opacity 0.28s;
+}
+.lock-toast.show { opacity: 1; }
+
+/* Dropdown Context Panels */
+.popup {
+    position: absolute;
+    top: 58px;
+    background: rgba(16,16,16,0.97);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 10px;
+    padding: 14px;
+    z-index: 40;
+    display: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.75);
+}
+.popup.visible { display: block; }
+.popup h3 {
+    color: rgba(255,255,255,0.55);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+#castPopup  { right: 14px; min-width: 210px; }
+#subPopup   { right: 60px; min-width: 170px; }
+
+.popup-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 6px;
+    cursor: pointer; color: #ccc; font-size: 13px;
+    transition: background 0.18s;
+}
+.popup-row:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.popup-row.active { color: #fff; }
+.popup-row.active .check { opacity: 1; }
+.check { opacity: 0; }
+
+.cast-status {
+    color: rgba(255,255,255,0.35);
+    font-size: 11px; margin-top: 10px; text-align: center;
+}
+
+/* Global Notification System Layout */
+#toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: rgba(16,16,16,0.92); color: #fff;
+    padding: 9px 20px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: opacity 0.28s;
+    pointer-events: none; z-index: 100; white-space: nowrap;
+}
+
+:fullscreen .player-wrapper,
+:-webkit-full-screen .player-wrapper { max-width: 100vw; }
+
+@media (max-width: 600px) {
+    .top-title { max-width: 180px; font-size: 14px; }
+    .center-cluster { gap: 2px; }
+    .ctrl-btn { width: 40px; height: 40px; }
+}
