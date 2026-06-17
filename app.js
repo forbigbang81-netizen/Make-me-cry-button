@@ -63,18 +63,17 @@ const elements = {
 // Initialize Portal and Local Player Environment
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. CLEAN AND INJECT THE ANIMATED SPACE BACKGROUND
+    // 1. CLEAN AND INJECT THE ANIMATED SPACE BACKGROUND SAFELY
     initAnimatedSpaceBackground();
 
     // 2. FORCE RECOVERY OF MISSING HERO CARD AND INTERACTIVE UTILITIES
-    // Completely bypass any broken layout wrapping hidden rules
     if (elements.loadingPanel) {
         elements.loadingPanel.style.setProperty('display', 'none', 'important');
         elements.loadingPanel.style.opacity = '0';
         elements.loadingPanel.style.pointerEvents = 'none';
     }
 
-    // Eliminate any lingering broken text blocks
+    // Eliminate any lingering raw database connecting text blocks
     const textNodes = document.querySelectorAll('div, p, span');
     textNodes.forEach(el => {
         if (el.textContent && el.textContent.includes('Connecting to database')) {
@@ -82,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Make absolutely sure your main interactive containers are rendering on top of the space background
+    // Enforce high-visibility stacking context for the anime hero card layout
     if (elements.animeCard) {
         elements.animeCard.style.setProperty('display', 'block', 'important');
         elements.animeCard.style.setProperty('visibility', 'visible', 'important');
@@ -91,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.animeCard.style.setProperty('z-index', '10', 'important');
     }
 
-    // Restore text strings and baseline poster vectors instantly
+    // Restore text strings and fallback visual posters instantly
     if (elements.apiImage) elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
     if (elements.cardTitle) elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
     if (elements.subpageTitle) elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
@@ -112,42 +111,29 @@ document.addEventListener('DOMContentLoaded', () => {
     setupInteractiveEventListeners();
 });
 
-// Creates a high-performance floating animated starfield/space matrix directly into your background element
+// Creates an isolated space starfield layout that will never swallow or wipe out your HTML elements
 function initAnimatedSpaceBackground() {
-    let targetBg = elements.homepageBg;
-    
-    // Fallback if the element id isn't explicitly available, attach directly to body back-layer
-    if (!targetBg) {
-        targetBg = document.body;
-    }
+    // Look for background wrapper container; if missing, build on document container base layer
+    let container = elements.homepageBg || document.body;
 
-    // Style the parent backframe to properly support layer stacks
-    targetBg.style.position = 'fixed';
-    targetBg.style.top = '0';
-    targetBg.style.left = '0';
-    targetBg.style.width = '100vw';
-    targetBg.style.height = '100vh';
-    targetBg.style.overflow = 'hidden';
-    targetBg.style.backgroundColor = '#0a0a12';
-    targetBg.style.zIndex = '0';
-
-    // Build the dynamic space engine element canvas
+    // Create a standalone canvas element dynamically
     const spaceCanvas = document.createElement('canvas');
-    spaceCanvas.style.position = 'absolute';
+    spaceCanvas.id = "dynamic-space-canvas";
+    spaceCanvas.style.position = 'fixed';
     spaceCanvas.style.top = '0';
     spaceCanvas.style.left = '0';
-    spaceCanvas.style.width = '100%';
-    spaceCanvas.style.height = '100%';
-    spaceCanvas.style.zIndex = '1';
+    spaceCanvas.style.width = '100vw';
+    spaceCanvas.style.height = '100vh';
+    spaceCanvas.style.zIndex = '-1'; // Pushes it directly behind all cards and wrappers
+    spaceCanvas.style.backgroundColor = '#07070c';
     spaceCanvas.style.pointerEvents = 'none';
-    
-    // Clear old visual background parameters and insert canvas context
-    targetBg.innerHTML = '';
-    targetBg.appendChild(spaceCanvas);
+
+    // Safely insert it as the first background item rather than wiping the innerHTML container clean
+    document.body.prepend(spaceCanvas);
 
     const ctx = spaceCanvas.getContext('2d');
     let stars = [];
-    const starCount = 120;
+    const starCount = 100;
 
     function resizeCanvas() {
         spaceCanvas.width = window.innerWidth;
@@ -156,36 +142,35 @@ function initAnimatedSpaceBackground() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Populate initial space properties
+    // Generate coordinate properties for space matrix items
     for (let i = 0; i < starCount; i++) {
         stars.push({
-            x: Math.random() * spaceCanvas.width,
-            y: Math.random() * spaceCanvas.height,
-            radius: Math.random() * 1.8 + 0.2,
-            velocity: Math.random() * 0.4 + 0.1,
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * 1.5 + 0.3,
+            velocity: Math.random() * 0.3 + 0.05,
             opacity: Math.random() * 0.8 + 0.2,
             fadeDirection: Math.random() > 0.5 ? 1 : -1
         });
     }
 
-    // Space animation update loops
+    // High performance animation loop
     function animateSpace() {
         ctx.clearRect(0, 0, spaceCanvas.width, spaceCanvas.height);
         
-        // Render and move floating deep space elements
         for (let i = 0; i < starCount; i++) {
             let s = stars[i];
             
-            // Apply drift velocity
+            // Apply floating drift velocity upward
             s.y -= s.velocity;
             if (s.y < 0) {
                 s.y = spaceCanvas.height;
                 s.x = Math.random() * spaceCanvas.width;
             }
 
-            // Smooth glowing/shimmering animation effect
-            s.opacity += 0.01 * s.fadeDirection;
-            if (s.opacity > 0.9 || s.opacity < 0.2) {
+            // Simulates smooth shimmering star glows
+            s.opacity += 0.008 * s.fadeDirection;
+            if (s.opacity > 0.95 || s.opacity < 0.15) {
                 s.fadeDirection *= -1;
             }
 
@@ -294,7 +279,10 @@ function initNativePlayer() {
 }
 
 function openSubpage() {
-    if (elements.subpage) elements.subpage.style.display = 'block';
+    if (elements.subpage) {
+        elements.subpage.style.setProperty('display', 'block', 'important');
+        elements.subpage.style.setProperty('z-index', '50', 'important');
+    }
     document.body.style.overflow = 'hidden';
 
     if (tutorialStep === 1) {
@@ -470,6 +458,7 @@ function showLockToast(msg) {
     setTimeout(() => elements.lockToast.classList.remove('show'), 2000);
 }
 
+// Popup systems metrics
 function toggleSubPopup() {
     if (!elements.subPopup) return;
     closeActivePopups(elements.subPopup);
@@ -487,210 +476,234 @@ function selectSubtitle(track) {
     if (elements.subPopup) elements.subPopup.classList.remove('visible');
 }
 
-// Set up background cast listeners safely
 function initCastFramework() {
-window.__onGCastApiAvailable = function(isAvailable) {
-if (isAvailable && window.cast) {
-castContext = cast.framework.CastContext.getInstance();
-castContext.setOptions({
-receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-});
+    window.__onGCastApiAvailable = function(isAvailable) {
+        if (isAvailable && window.cast) {
+            castContext = cast.framework.CastContext.getInstance();
+            castContext.setOptions({
+                receiverApplication            castContext.setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+            });
+        }
+    };
 }
-};
-}
+
 function toggleCastPopup() {
-if (!elements.castPopup) return;
-closeActivePopups(elements.castPopup);
-elements.castPopup.classList.toggle('visible');
-trackActivePopup(elements.castPopup);
-if (elements.castPopup.classList.contains('visible')) {
-renderMockCastDevices();
+    if (!elements.castPopup) return;
+    closeActivePopups(elements.castPopup);
+    elements.castPopup.classList.toggle('visible');
+    trackActivePopup(elements.castPopup);
+    if (elements.castPopup.classList.contains('visible')) {
+        renderMockCastDevices();
+    }
 }
-}
+
 function renderMockCastDevices() {
-if (elements.castDeviceList) {
-elements.castDeviceList.innerHTML = <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div> <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>;
+    if (elements.castDeviceList) {
+        elements.castDeviceList.innerHTML = `
+            <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div>
+            <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>
+        `;
+    }
+    if (elements.castStatusText) elements.castStatusText.textContent = "Select target cast asset vector link";
 }
-if (elements.castStatusText) elements.castStatusText.textContent = "Select target cast asset vector link";
-}
+
 function connectToMockDevice(deviceName) {
-isCasting = true;
-if (elements.btnCast) elements.btnCast.classList.add('casting');
-if (elements.castPopup) elements.castPopup.classList.remove('visible');
-if (nativePlayer && isPlayerReady && typeof nativePlayer.pause === 'function') nativePlayer.pause();
-showToast(Casting connection initialized -> ${deviceName});
+    isCasting = true;
+    if (elements.btnCast) elements.btnCast.classList.add('casting');
+    if (elements.castPopup) elements.castPopup.classList.remove('visible');
+    if (nativePlayer && isPlayerReady && typeof nativePlayer.pause === 'function') nativePlayer.pause();
+    showToast(`Casting connection initialized -> ${deviceName}`);
 }
+
 function trackActivePopup(pop) {
-activePopup = pop.classList.contains('visible') ? pop : null;
+    activePopup = pop.classList.contains('visible') ? pop : null;
 }
+
+// Global active element controller closures
 function closeActivePopups(exclude = null) {
-if (activePopup && activePopup !== exclude) {
-activePopup.classList.remove('visible');
-activePopup = null;
+    if (activePopup && activePopup !== exclude) {
+        activePopup.classList.remove('visible');
+        activePopup = null;
+    }
 }
-}
+
 function showToast(msg) {
-if (!elements.toast) return;
-elements.toast.textContent = msg;
-elements.toast.style.opacity = '1';
-setTimeout(() => { elements.toast.style.opacity = '0'; }, 3000);
+    if (!elements.toast) return;
+    elements.toast.textContent = msg;
+    elements.toast.style.opacity = '1';
+    setTimeout(() => { elements.toast.style.opacity = '0'; }, 3000);
 }
+
 let lastTapTimestamp = 0;
 function handleOverlayClickGesture(e) {
-if (isControlsLocked) {
-handleLockedOverlayClick();
-return;
-}
-closeActivePopups();
-const timestamp = new Date().getTime();
-const tapDelay = timestamp - lastTapTimestamp;
-const containerWidth = elements.videoContainer ? elements.videoContainer.clientWidth : window.innerWidth;
-const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-const clickX = clientX - (elements.videoContainer ? elements.videoContainer.getBoundingClientRect().left : 0);
-if (tapDelay < 300 && tapDelay > 0) {
-if (clickX < containerWidth / 2) {
-performDoubleTapSeek('left');
-} else {
-performDoubleTapSeek('right');
-}
-lastTapTimestamp = 0;
-} else {
-lastTapTimestamp = timestamp;
-setTimeout(() => {
-if (lastTapTimestamp === timestamp) {
-toggleControlsBarVisibility();
-}
-}, 300);
-}
-}
-function performDoubleTapSeek(direction) {
-if (!isPlayerReady || !nativePlayer) return;
-const currentTime = nativePlayer.currentTime || 0;
-if (direction === 'left') {
-nativePlayer.currentTime = Math.max(0, currentTime - 10);
-animateSeekFlash(elements.flashLeft);
-} else {
-nativePlayer.currentTime = Math.min(nativePlayer.duration || 0, currentTime + 10);
-animateSeekFlash(elements.flashRight);
-}
-}
-function animateSeekFlash(el) {
-if (!el) return;
-el.classList.add('show');
-setTimeout(() => el.classList.remove('show'), 650);
-}
-function triggerCenterFlash(type) {
-if (!elements.centerFlash || !elements.cfPlay || !elements.cfPause) return;
-if (type === 'play') {
-elements.cfPlay.style.display = 'block';
-elements.cfPause.style.display = 'none';
-} else {
-elements.cfPlay.style.display = 'none';
-elements.cfPause.style.display = 'block';
-}
-elements.centerFlash.classList.add('show');
-setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
-}
-function toggleControlsBarVisibility() {
-if (!elements.videoContainer) return;
-if (elements.videoContainer.classList.contains('controls-hidden')) {
-showControlsBar();
-} else {
-hideControlsBar();
-}
-}
-function showControlsBar() {
-if (elements.videoContainer) elements.videoContainer.classList.remove('controls-hidden');
-resetControlsTimeout();
-}
-function hideControlsBar() {
-if (elements.videoContainer && isPlayerReady && nativePlayer && !nativePlayer.paused) {
-elements.videoContainer.classList.add('controls-hidden');
-closeActivePopups();
-}
-}
-function resetControlsTimeout() {
-clearTimeout(controlsTimeout);
-if (isControlsLocked) return;
-controlsTimeout = setTimeout(() => {
-hideControlsBar();
-}, 3500);
-}
-function toggleFullscreen() {
-if (!elements.playerWrapper) return;
-if (!document.fullscreenElement) {
-elements.playerWrapper.requestFullscreen().catch(err => {
-showToast("Error establishing fullscreen environment");
-});
-} else {
-document.exitFullscreen();
-}
-}
-function setupInteractiveEventListeners() {
-if (elements.clickOverlay) elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
-if (elements.volSlider) elements.volSlider.addEventListener('input', handleVolumeSlider);
-if (elements.animeCard) elements.animeCard.addEventListener('click', openSubpage);
-if (elements.cryActionBtn) elements.cryActionBtn.addEventListener('click', playCleanVideo);
-if (elements.btnPlayPause) elements.btnPlayPause.addEventListener('click', togglePlayPause);
-if (elements.btnMute) elements.btnMute.addEventListener('click', toggleMuteState);
-if (elements.btnLock) elements.btnLock.addEventListener('click', toggleInterfaceLock);
-let isDraggingScrub = false;
-const startScrub = (e) => {
-if (isControlsLocked) return;
-isDraggingScrub = true;
-handleProgressScrub(e);
-};
-const moveScrub = (e) => {
-if (isDraggingScrub) handleProgressScrub(e);
-};
-const endScrub = () => { isDraggingScrub = false; };
-if (elements.progressWrap) {
-elements.progressWrap.addEventListener('mousedown', startScrub);
-elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
-}
-window.addEventListener('mousemove', moveScrub);
-window.addEventListener('mouseup', endScrub);
-window.addEventListener('touchmove', moveScrub, {passive: true});
-window.addEventListener('touchend', endScrub);
-window.addEventListener('resize', () => {
-if (tutorialStep > 0) positionTutorialBubble();
-});
-window.addEventListener('keydown', (e) => {
-if (!elements.subpage || elements.subpage.style.display !== 'block') return;
-if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
-switch(e.key.toLowerCase()) {
-case ' ':
-case 'k':
-e.preventDefault();
-togglePlayPause();
-break;
-case 'f':
-e.preventDefault();
-toggleFullscreen();
-break;
-case 'm':
-e.preventDefault();
-toggleMuteState();
-break;
-case 'l':
-e.preventDefault();
-toggleInterfaceLock();
-break;
-case 'arrowleft':
-case 'j':
-e.preventDefault();
-performDoubleTapSeek('left');
-showControlsBar();
-break;
-case 'arrowright':
-e.preventDefault();
-performDoubleTapSeek('right');
-showControlsBar();
-break;
-}
-});
-}
-```
+    if (isControlsLocked) {
+        handleLockedOverlayClick();
+        return;
+    }
+    closeActivePopups();
 
-```
+    const timestamp = new Date().getTime();
+    const tapDelay = timestamp - lastTapTimestamp;
+    const containerWidth = elements.videoContainer ? elements.videoContainer.clientWidth : window.innerWidth;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clickX = clientX - (elements.videoContainer ? elements.videoContainer.getBoundingClientRect().left : 0);
+
+    if (tapDelay < 300 && tapDelay > 0) {
+        if (clickX < containerWidth / 2) {
+            performDoubleTapSeek('left');
+        } else {
+            performDoubleTapSeek('right');
+        }
+        lastTapTimestamp = 0;
+    } else {
+        lastTapTimestamp = timestamp;
+        setTimeout(() => {
+            if (lastTapTimestamp === timestamp) {
+                toggleControlsBarVisibility();
+            }
+        }, 300);
+    }
+}
+
+function performDoubleTapSeek(direction) {
+    if (!isPlayerReady || !nativePlayer) return;
+    const currentTime = nativePlayer.currentTime || 0;
+    if (direction === 'left') {
+        nativePlayer.currentTime = Math.max(0, currentTime - 10);
+        animateSeekFlash(elements.flashLeft);
+    } else {
+        nativePlayer.currentTime = Math.min(nativePlayer.duration || 0, currentTime + 10);
+        animateSeekFlash(elements.flashRight);
+    }
+}
+
+function animateSeekFlash(el) {
+    if (!el) return;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 650);
+}
+
+function triggerCenterFlash(type) {
+    if (!elements.centerFlash || !elements.cfPlay || !elements.cfPause) return;
+    if (type === 'play') {
+        elements.cfPlay.style.display = 'block';
+        elements.cfPause.style.display = 'none';
+    } else {
+        elements.cfPlay.style.display = 'none';
+        elements.cfPause.style.display = 'block';
+    }
+    elements.centerFlash.classList.add('show');
+    setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
+}
+
+function toggleControlsBarVisibility() {
+    if (!elements.videoContainer) return;
+    if (elements.videoContainer.classList.contains('controls-hidden')) {
+        showControlsBar();
+    } else {
+        hideControlsBar();
+    }
+}
+
+function showControlsBar() {
+    if (elements.videoContainer) elements.videoContainer.classList.remove('controls-hidden');
+    resetControlsTimeout();
+}
+
+function hideControlsBar() {
+    if (elements.videoContainer && isPlayerReady && nativePlayer && !nativePlayer.paused) {
+        elements.videoContainer.classList.add('controls-hidden');
+        closeActivePopups();
+    }
+}
+
+function resetControlsTimeout() {
+    clearTimeout(controlsTimeout);
+    if (isControlsLocked) return;
+    controlsTimeout = setTimeout(() => {
+        hideControlsBar();
+    }, 3500);
+}
+
+function toggleFullscreen() {
+    if (!elements.playerWrapper) return;
+    if (!document.fullscreenElement) {
+        elements.playerWrapper.requestFullscreen().catch(err => {
+            showToast("Error establishing fullscreen environment");
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function setupInteractiveEventListeners() {
+    if (elements.clickOverlay) elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
+    if (elements.volSlider) elements.volSlider.addEventListener('input', handleVolumeSlider);
+    if (elements.animeCard) elements.animeCard.addEventListener('click', openSubpage);
+    if (elements.cryActionBtn) elements.cryActionBtn.addEventListener('click', playCleanVideo);
+    if (elements.btnPlayPause) elements.btnPlayPause.addEventListener('click', togglePlayPause);
+    if (elements.btnMute) elements.btnMute.addEventListener('click', toggleMuteState);
+    if (elements.btnLock) elements.btnLock.addEventListener('click', toggleInterfaceLock);
+    
+    let isDraggingScrub = false;
+    const startScrub = (e) => {
+        if (isControlsLocked) return;
+        isDraggingScrub = true;
+        handleProgressScrub(e);
+    };
+    const moveScrub = (e) => {
+        if (isDraggingScrub) handleProgressScrub(e);
+    };
+    const endScrub = () => { isDraggingScrub = false; };
+
+    if (elements.progressWrap) {
+        elements.progressWrap.addEventListener('mousedown', startScrub);
+        elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
+    }
+    window.addEventListener('mousemove', moveScrub);
+    window.addEventListener('mouseup', endScrub);
+    window.addEventListener('touchmove', moveScrub, {passive: true});
+    window.addEventListener('touchend', endScrub);
+
+    window.addEventListener('resize', () => {
+        if (tutorialStep > 0) positionTutorialBubble();
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (!elements.subpage || elements.subpage.style.display !== 'block') return;
+        if (isControlsLocked && e.key.toLowerCase() !== 'l') return;
+
+        switch(e.key.toLowerCase()) {
+            case ' ':
+            case 'k':
+                e.preventDefault();
+                togglePlayPause();
+                break;
+            case 'f':
+                e.preventDefault();
+                toggleFullscreen();
+                break;
+            case 'm':
+                e.preventDefault();
+                toggleMuteState();
+                break;
+            case 'l':
+                e.preventDefault();
+                toggleInterfaceLock();
+                break;
+            case 'arrowleft':
+            case 'j':
+                e.preventDefault();
+                performDoubleTapSeek('left');
+                showControlsBar();
+                break;
+            case 'arrowright':
+                e.preventDefault();
+                performDoubleTapSeek('right');
+                showControlsBar();
+                break;
+        }
+    });
+}
