@@ -563,6 +563,8 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     text-align: center;
     z-index: 10000;
+    /* Smooth transitions when moving */
+    transition: top 0.3s ease, left 0.3s ease;
 }
 
 .tutorial-bubble p {
