@@ -187,7 +187,7 @@ body {
     cursor: pointer;
 }
 
-/* Top Bar Control Array */
+/* Top Bar Control Array Styling - Fixed Alignment */
 .top-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -254,7 +254,7 @@ body {
 }
 .top-btn.casting { border-color: #e50914; background: rgba(229,9,20,0.3); }
 
-/* Bottom Controls Row */
+/* Bottom Controls Row Styling */
 .controls-bar {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -327,7 +327,7 @@ body {
 }
 .progress-wrap:hover .progress-thumb { transform: translate(-50%, -50%) scale(1.35); }
 
-/* Button Action Matrix Line */
+/* Button Alignment and Sizing Row Fixes */
 .btn-row {
     display: flex;
     align-items: center;
@@ -364,7 +364,7 @@ body {
 }
 .play-btn:hover { background: rgba(255,255,255,0.26); }
 
-/* Volume Slider Elements */
+/* Smooth Expanding Volume Controls */
 .volume-wrap { 
     display: flex; 
     align-items: center;
@@ -396,7 +396,7 @@ body {
 /* Center Control Cluster */
 .center-cluster { display: flex; align-items: center; gap: 4px; }
 
-/* Seek Flash Alerts */
+/* Double-tap Seek Overlay Layout */
 .seek-flash {
     position: absolute;
     top: 50%; transform: translateY(-50%);
@@ -413,7 +413,7 @@ body {
     text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
-/* Center Flash Controls */
+/* Center Playback Flash */
 .center-flash {
     position: absolute;
     top: 50%; left: 50%; transform: translate(-50%,-50%);
@@ -422,11 +422,11 @@ body {
 }
 .center-flash.show { opacity: 1; }
 
-/* Auto Hide Layout Handles */
+/* Interface Toggle Handles */
 .controls-hidden .top-bar,
 .controls-hidden .controls-bar { opacity: 0; pointer-events: none; }
 
-/* Lock Component Layer */
+/* Interface Lock Component Layer */
 .lock-overlay {
     position: absolute; inset: 0;
     z-index: 15; display: none;
@@ -442,7 +442,7 @@ body {
 }
 .lock-toast.show { opacity: 1; }
 
-/* Dropdown Context Panels */
+/* Dropdown Popups Layout */
 .popup {
     position: absolute;
     top: 58px;
@@ -481,7 +481,7 @@ body {
     font-size: 11px; margin-top: 10px; text-align: center;
 }
 
-/* Global Notification System Layout */
+/* Toast Engine Panel */
 #toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: rgba(16,16,16,0.92); color: #fff;
@@ -498,4 +498,58 @@ body {
     .top-title { max-width: 180px; font-size: 14px; }
     .center-cluster { gap: 2px; }
     .ctrl-btn { width: 40px; height: 40px; }
+}
+
+/* Tutorial Onboarding System Layout */
+.tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 9999;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
+
+.tutorial-bubble {
+    position: absolute;
+    background: #121214;
+    border: 2px solid #e50914;
+    border-radius: 12px;
+    padding: 16px;
+    width: 280px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    text-align: center;
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+.tutorial-bubble p {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.tutorial-bubble button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tutorial-bubble button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Spotlight Highlighting Matrix Rules */
+.tutorial-spotlight {
+    position: relative;
+    z-index: 10001 !important;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), 0 0 15px #e50914 !important;
+    pointer-events: auto !important;
 }
