@@ -1,165 +1,189 @@
 /* ═══════════════════════════════════════════
    DETAIL.JS — Detail page logic
-   Fetches anime info + handles cry modal
+   PS browser compatible: XHR, no async/await,
+   no optional chaining
 ═══════════════════════════════════════════ */
 
-const EDGERUNNERS_ID = 42310;
-const JIKAN_BASE = 'https://api.jikan.moe/v4';
+var EDGERUNNERS_ID = 42310;
+var JIKAN_BASE = 'https://api.jikan.moe/v4';
+
+/* ── Fallback static data ────────────────── */
+var FALLBACK = {
+  title: 'CYBERPUNK: EDGERUNNERS',
+  score: '8.71',
+  episodes: '10',
+  year: '2022',
+  studio: 'TRIGGER',
+  image: 'https://cdn.myanimelist.net/images/anime/1818/126435l.jpg',
+  synopsis: 'In a dystopian Night City, a street kid struggles to survive after losing his family to tragedy. Determined to fulfill his mother\'s wish, he turns to a life of crime as an Edgerunner — a mercenary outlaw. But Night City always takes more than it gives.'
+};
 
 /* ── Cry content ─────────────────────────── */
-const CRY_MOMENTS = [
+var CRY_MOMENTS = [
   {
-    ep: 'EPISODE 10 — SPOILER WARNING',
+    ep: 'EPISODE 10 \u2014 SPOILER WARNING',
     title: 'THIS IS WHY WE SUFFER',
-    quote: '"I love you, Lucy. I love you, choom."',
+    quote: '\u201cI love you, Lucy. I love you, choom.\u201d',
     body: [
-      'He made it. For one impossible moment — David Martinez made it to the Moon.',
-      'But Night City doesn\'t give you happy endings. It takes the ones who burn brightest and it doesn\'t stop until there\'s nothing left.',
-      'Maine warned him. Lucy begged him. Everyone who loved him watched him dissolve into chrome and ruin. And still — he smiled.',
-    ],
+      'He made it. For one impossible moment \u2014 David Martinez made it to the Moon.',
+      'But Night City doesn\'t give you happy endings. It takes the ones who burn brightest and doesn\'t stop until there\'s nothing left.',
+      'Maine warned him. Lucy begged him. Everyone who loved him watched him dissolve into chrome and ruin. And still \u2014 he smiled.'
+    ]
   },
   {
-    ep: 'EPISODE 8 — THE FALL BEGINS',
+    ep: 'EPISODE 8 \u2014 THE FALL BEGINS',
     title: 'EVERYONE WARNED YOU',
-    quote: '"Being an Edgerunner is a death sentence. You know that, right?"',
+    quote: '\u201cBeing an Edgerunner is a death sentence. You know that, right?\u201d',
     body: [
       'You watched it happen in slow motion. The cyberpsychosis. The implants. The way he kept pushing past every limit because he thought love was enough armor.',
       'It was never going to be enough.',
-      'That\'s what makes it hurt so much — you knew, and you watched anyway.',
-    ],
+      'That\'s what makes it hurt so much \u2014 you knew, and you watched anyway.'
+    ]
   },
   {
     ep: 'THE WHOLE SERIES',
     title: 'NIGHT CITY NEVER CHANGES',
-    quote: '"The city has a way of getting inside you. Changing you."',
+    quote: '\u201cThe city has a way of getting inside you. Changing you.\u201d',
     body: [
       '10 episodes. They gave you 10 episodes to fall completely in love with every single one of them.',
       'The city didn\'t care. The city never cares. And somehow that\'s the most honest thing about it.',
-      'David went from a kid eating a sandwich on the NCRPD transport to a legend. A ghost. A reason people still say his name in hushed tones.',
-      'It was worth it. It always is. That\'s the curse.',
-    ],
-  },
+      'David went from a kid on the transport to a legend. A ghost. A reason people still say his name in hushed tones.',
+      'It was worth it. It always is. That\'s the curse.'
+    ]
+  }
 ];
 
-let currentMoment = 0;
+var currentMoment = 0;
 
 function openCryModal() {
-  const modal    = document.getElementById('cryModal');
-  const backdrop = document.getElementById('modalBackdrop');
-  const content  = document.getElementById('modalContent');
+  var modal    = document.getElementById('cryModal');
+  var backdrop = document.getElementById('modalBackdrop');
+  var content  = document.getElementById('modalContent');
 
-  // Cycle through moments
-  const moment = CRY_MOMENTS[currentMoment % CRY_MOMENTS.length];
+  var moment = CRY_MOMENTS[currentMoment % CRY_MOMENTS.length];
   currentMoment++;
 
-  content.innerHTML = `
-    <div class="modal-ep-tag">${moment.ep}</div>
-    <div class="modal-title">${moment.title}</div>
-    <blockquote class="modal-quote">${moment.quote}</blockquote>
-    <div class="modal-body">
-      ${moment.body.map(p => `<p>${p}</p>`).join('')}
-    </div>
-  `;
+  var bodyHTML = '';
+  for (var i = 0; i < moment.body.length; i++) {
+    bodyHTML += '<p>' + moment.body[i] + '</p>';
+  }
 
-  modal.classList.add('active');
-  backdrop.classList.add('active');
+  content.innerHTML =
+    '<div class="modal-ep-tag">' + moment.ep + '</div>' +
+    '<div class="modal-title">' + moment.title + '</div>' +
+    '<blockquote class="modal-quote">' + moment.quote + '</blockquote>' +
+    '<div class="modal-body">' + bodyHTML + '</div>';
+
+  modal.className    = 'cry-modal active';
+  backdrop.className = 'modal-backdrop active';
   document.body.style.overflow = 'hidden';
 }
 
 function closeCryModal() {
-  const modal    = document.getElementById('cryModal');
-  const backdrop = document.getElementById('modalBackdrop');
-  modal.classList.remove('active');
-  backdrop.classList.remove('active');
+  var modal    = document.getElementById('cryModal');
+  var backdrop = document.getElementById('modalBackdrop');
+  modal.className    = 'cry-modal';
+  backdrop.className = 'modal-backdrop';
   document.body.style.overflow = '';
 }
 
-/* ── Fetch & render anime info ───────────── */
-async function fetchAndRender() {
+/* ── Apply data to page ──────────────────── */
+function applyAnimeData(anime) {
+  var title    = (anime && (anime.title_english || anime.title)) || FALLBACK.title;
+  var scoreVal = (anime && anime.score)                          || FALLBACK.score;
+  var eps      = (anime && anime.episodes)                       || FALLBACK.episodes;
+  var year     = (anime && anime.year)                           || FALLBACK.year;
+  var synopsis = (anime && anime.synopsis)                       || FALLBACK.synopsis;
+
+  var studio = FALLBACK.studio;
+  if (anime && anime.studios && anime.studios.length > 0 && anime.studios[0].name) {
+    studio = anime.studios[0].name.toUpperCase();
+  }
+
+  var image = FALLBACK.image;
+  if (anime && anime.images && anime.images.jpg) {
+    image = anime.images.jpg.large_image_url || anime.images.jpg.image_url || FALLBACK.image;
+  }
+
+  // Poster
+  var poster = document.getElementById('animePoster');
+  if (poster) { poster.src = image; poster.alt = title; }
+
+  // Title
+  var titleEl = document.getElementById('seriesTitle');
+  if (titleEl) titleEl.textContent = title.toUpperCase();
+
+  // Meta
+  var metaEps    = document.getElementById('metaEps');
+  var metaScore  = document.getElementById('metaScore');
+  var metaYear   = document.getElementById('metaYear');
+  var metaStudio = document.getElementById('metaStudio');
+
+  if (metaEps)    metaEps.textContent    = eps + ' EPISODES';
+  if (metaScore)  metaScore.textContent  = '\u2605 ' + scoreVal + ' / 10';
+  if (metaYear)   metaYear.textContent   = String(year);
+  if (metaStudio) metaStudio.textContent = studio;
+
+  // Synopsis — strip source notes
+  var cleanSynopsis = synopsis
+    .replace(/\[Written by[^\]]*\]/gi, '')
+    .replace(/\(Source:[^)]*\)/gi, '')
+    .trim();
+
+  var synopsisEl = document.getElementById('seriesSynopsis');
+  if (synopsisEl) synopsisEl.textContent = cleanSynopsis;
+}
+
+/* ── Fetch via XHR ───────────────────────── */
+function fetchAndRender() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', JIKAN_BASE + '/anime/' + EDGERUNNERS_ID, true);
+  xhr.timeout = 8000;
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status >= 200 && xhr.status < 300) {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        applyAnimeData(data.data || null);
+      } catch (e) {
+        applyAnimeData(null);
+      }
+    } else {
+      applyAnimeData(null);
+    }
+  };
+
+  xhr.ontimeout = function () { applyAnimeData(null); };
+  xhr.onerror   = function () { applyAnimeData(null); };
+
   try {
-    // Small delay to respect Jikan rate limits
-    await new Promise(r => setTimeout(r, 400));
-
-    const res = await fetch(`${JIKAN_BASE}/anime/${EDGERUNNERS_ID}`);
-    if (!res.ok) throw new Error(`API ${res.status}`);
-    const json = await res.json();
-    const anime = json.data;
-
-    // Poster
-    const poster = document.getElementById('animePoster');
-    if (poster) {
-      poster.src = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
-      poster.alt = anime.title_english || anime.title;
-    }
-
-    // Title
-    const titleEl = document.getElementById('seriesTitle');
-    if (titleEl) {
-      titleEl.textContent = (anime.title_english || anime.title).toUpperCase();
-    }
-
-    // Meta tags
-    const eps    = document.getElementById('metaEps');
-    const score  = document.getElementById('metaScore');
-    const year   = document.getElementById('metaYear');
-    const studio = document.getElementById('metaStudio');
-
-    if (eps)    eps.textContent    = anime.episodes ? `${anime.episodes} EPISODES` : 'COMPLETE';
-    if (score)  score.textContent  = anime.score    ? `★ ${anime.score} / 10`     : '★ —';
-    if (year)   year.textContent   = anime.year     ? `${anime.year}`              : '2022';
-    if (studio) studio.textContent = anime.studios?.[0]?.name?.toUpperCase()       || 'TRIGGER';
-
-    // Synopsis
-    const synopsisEl = document.getElementById('seriesSynopsis');
-    if (synopsisEl && anime.synopsis) {
-      // Trim and strip the (Source: ...) bit
-      const clean = anime.synopsis
-        .replace(/\[Written by.*?\]/gi, '')
-        .replace(/\(Source:.*?\)/gi, '')
-        .trim();
-      synopsisEl.textContent = clean;
-    }
-  } catch (err) {
-    console.error('Failed to fetch anime data:', err);
-    // Fallback static data
-    const titleEl = document.getElementById('seriesTitle');
-    if (titleEl) titleEl.textContent = 'CYBERPUNK: EDGERUNNERS';
-
-    const synopsisEl = document.getElementById('seriesSynopsis');
-    if (synopsisEl) {
-      synopsisEl.textContent =
-        'In a dystopian Night City, a street kid struggles to survive after losing his family to tragedy. Determined to fulfill his mother\'s wish, he turns to a life of crime as an Edgerunner — a mercenary outlaw. But Night City has a price for everything.';
-    }
-
-    const eps    = document.getElementById('metaEps');
-    const score  = document.getElementById('metaScore');
-    const year   = document.getElementById('metaYear');
-    const studio = document.getElementById('metaStudio');
-
-    if (eps)    eps.textContent    = '10 EPISODES';
-    if (score)  score.textContent  = '★ 8.71 / 10';
-    if (year)   year.textContent   = '2022';
-    if (studio) studio.textContent = 'TRIGGER';
+    xhr.send();
+  } catch (e) {
+    applyAnimeData(null);
   }
 }
 
 /* ── Init ────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+function init() {
   fetchAndRender();
 
-  // Cry button
-  const cryBtn = document.getElementById('cryBtn');
-  if (cryBtn) cryBtn.addEventListener('click', openCryModal);
+  var cryBtn = document.getElementById('cryBtn');
+  if (cryBtn) cryBtn.onclick = openCryModal;
 
-  // Close modal
-  const closeBtn = document.getElementById('modalClose');
-  if (closeBtn) closeBtn.addEventListener('click', closeCryModal);
+  var closeBtn = document.getElementById('modalClose');
+  if (closeBtn) closeBtn.onclick = closeCryModal;
 
-  const backdrop = document.getElementById('modalBackdrop');
-  if (backdrop) backdrop.addEventListener('click', closeCryModal);
+  var backdrop = document.getElementById('modalBackdrop');
+  if (backdrop) backdrop.onclick = closeCryModal;
 
-  // ESC to close
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeCryModal();
-  });
-});
+  document.onkeydown = function (e) {
+    if (e && (e.key === 'Escape' || e.keyCode === 27)) closeCryModal();
+  };
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
