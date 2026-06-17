@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyberpunk Edgerunners Portal</title>
+    <title>Cyberpunk Edgerunners Media Portal</title>
     <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -34,7 +34,7 @@
                 <div class="video-container" id="videoContainer">
 
                     <video id="yt-iframe" playsinline preload="auto">
-                        <source src="video.mp4" type="video/mp4">
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
 
@@ -168,6 +168,13 @@
 
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="tutorialOverlay" class="tutorial-overlay" style="display: none;">
+        <div id="tutorialBubble" class="tutorial-bubble">
+            <p id="tutorialText">Welcome! Click on the anime card title to open the media details database vector.</p>
+            <button id="tutorialSkip" onclick="terminateTutorial()">Skip Tutorial</button>
         </div>
     </div>
 
