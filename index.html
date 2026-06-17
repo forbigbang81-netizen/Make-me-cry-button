@@ -160,7 +160,7 @@
             transform: scale(1.04);
         }
 
-        /* ── YouTube Framework Layout Integration Matrix ── */
+        /* Framework Layout Integration Matrix */
         .player-wrapper {
             display: none;
             position: relative;
@@ -185,7 +185,6 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             border: none;
-            pointer-events: none;
         }
 
         .click-overlay {
@@ -509,9 +508,10 @@
             <div class="player-wrapper" id="playerWrapper">
                 <div class="video-container" id="videoContainer">
 
-                    <iframe id="yt-iframe"
-                        src="https://www.youtube.com/embed/KvMY1uzSC1E?enablejsapi=1&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3"
-                        allow="autoplay; fullscreen" allowfullscreen></iframe>
+                    <video id="yt-iframe" playsinline preload="auto">
+                        <source src="video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
 
                     <div class="click-overlay" id="clickOverlay"></div>
 
@@ -562,21 +562,102 @@
                                     <rect x="1" y="1" width="20" height="14" rx="2.5" stroke="white" stroke-width="1.5"/>
                                     <line x1="5" y1="6" x2="17" y2="6" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
                                     <line x1="5" y1="10" x2="13" y2="10" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-               <div id="toast"></div>
+                                </svg>
+                            </button>
+                                                 <button class="top-btn" id="btnCast" title="Chromecast Connection" onclick="toggleCastPopup()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 17a5 5 0 0 1 5 5M2 12a10 10 0 0 1 10 10M2 7a15 15 0 0 1 15 15M21 5v14a2 2 0 0 1-2 2H13l3-3H7l3 3H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="popup" id="subPopup">
+                            <h3>Audio / Subtitles</h3>
+                            <div class="popup-row active" onclick="selectSubtitle('off')"><span class="check">✓ </span>Off</div>
+                            <div class="popup-row" onclick="selectSubtitle('en')"><span class="check">✓ </span>English [CC]</div>
+                            <div class="popup-row" onclick="selectSubtitle('ja')"><span class="check">✓ </span>Japanese (日本語)</div>
+                        </div>
+
+                        <div class="popup" id="castPopup">
+                            <h3>Cast Stream Pipeline</h3>
+                            <div id="castDeviceList"></div>
+                            <div class="cast-status" id="castStatusText">Scanning network nodes...</div>
+                        </div>
+                    </div>
+
+                    <div class="lock-overlay" id="lockOverlay" onclick="handleLockedOverlayClick()"></div>
+                    <div class="lock-toast" id="lockToast">Interface Panel Locked</div>
+
+                    <div class="controls-bar" id="controls-bar">
+                        <div class="time-row">
+                            <span class="time-label" id="timeLabelLeft">00:00</span>
+                            <div class="progress-wrap" id="progressWrap">
+                                <div class="progress-track">
+                                    <div class="progress-buffer" id="progressBuffer"></div>
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <div class="progress-thumb" id="progressThumb"></div>
+                            </div>
+                            <span class="time-label right" id="timeLabelRight">00:00</span>
+                        </div>
+
+                        <div class="btn-row">
+                            <div class="left-btns">
+                                <button class="ctrl-btn" id="btnLock" title="Lock Screen" onclick="toggleInterfaceLock()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div class="volume-wrap">
+                                    <button class="ctrl-btn" id="btnMute" title="Mute/Unmute Audio" onclick="toggleMuteState()">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                            <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-3-1.23L6 7H2v10h4l5 5V2zm1.5 10c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="white"/>
+                                        </svg>
+                                    </button>
+                                    <div class="vol-slider-wrap">
+                                        <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="75">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="center-cluster">
+                                <button class="ctrl-btn play-btn" id="btnPlayPause" title="Play/Pause" onclick="togglePlayPause()">
+                                    <svg width="24" height="24" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" fill="white"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="right-btns">
+                                <button class="ctrl-btn" id="btnFullscreen" title="Toggle Fullscreen" onclick="toggleFullscreen()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
 
     <script>
         // Global State Engine & Target Configuration Asset Setup
-        const TARGET_ANIME_ID = 42310; // Cyberpunk: Edgerunners MyAnimeList Database Key ID
-        let ytPlayer = null;
+        const TARGET_ANIME_ID = 42310; 
+        let nativePlayer = null;
         let isPlayerReady = false;
         let isControlsLocked = false;
         let controlsTimeout = null;
         let activePopup = null;
         let currentSubtitleTrack = 'off';
 
-        // Cast State Variables Matrix
         let castContext = null;
-        let castSession = null;
         let isCasting = false;
 
         // Document Object Model Element Array Mapping 
@@ -621,10 +702,10 @@
             toast: document.getElementById('toast')
         };
 
-        // Initialize Portal and Fetch Remote Jikan API Asset Data
+        // Initialize Portal and Local Player Environment
         document.addEventListener('DOMContentLoaded', () => {
             fetchAnimeMetadata();
-            loadYouTubeIframeAPI();
+            initNativePlayer();
             initCastFramework();
             setupInteractiveEventListeners();
         });
@@ -635,38 +716,52 @@
                 if (!response.ok) throw new Error('Network pipeline stream asset error');
                 const { data } = await response.json();
 
-                // Assign fetched database parameters onto UI
                 elements.apiImage.src = data.images.jpg.large_image_url;
                 elements.cardTitle.textContent = data.title;
                 elements.subpageTitle.textContent = data.title;
                 elements.playerTitle.textContent = data.title;
                 elements.cardDesc.textContent = data.synopsis;
 
-                // Toggle visibility frame view matrix arrays
                 elements.loadingPanel.style.display = 'none';
                 elements.animeCard.style.display = 'block';
             } catch (err) {
                 console.error("API error, switching to offline fallback: ", err);
-                // Hardcoded fallback data alignment core stream mapping
                 elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
                 elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
-                elements.cardDesc.textContent = "A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future. Having everything to lose, he stays alive by becoming an edgerunner—a mercenary outlaw also known as a cyberpunk.";
+                elements.cardDesc.textContent = "A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future.";
                 elements.loadingPanel.style.display = 'none';
                 elements.animeCard.style.display = 'block';
             }
         }
 
-        // Subpage Overlay Controller Framework Navigation Router
+        function initNativePlayer() {
+            nativePlayer = elements.iframe;
+            isPlayerReady = true;
+
+            // Direct event hooks from the HTML5 media engine
+            nativePlayer.addEventListener('play', () => {
+                updatePlayPauseButton(true);
+                resetControlsTimeout();
+            });
+
+            nativePlayer.addEventListener('pause', () => {
+                updatePlayPauseButton(false);
+                showControlsBar(); 
+            });
+
+            nativePlayer.volume = elements.volSlider.value / 100;
+            startTrackingProgressLoop();
+        }
+
         function openSubpage() {
             elements.subpage.style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
 
         function closeSubpage() {
-            if (ytPlayer && isPlayerReady) {
-                ytPlayer.pauseVideo();
+            if (nativePlayer && isPlayerReady) {
+                nativePlayer.pause();
             }
-            // Reset player wrapper state maps
             if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
             elements.playerWrapper.style.display = 'none';
             elements.cryActionBtn.style.display = 'inline-block';
@@ -678,62 +773,25 @@
             elements.cryActionBtn.style.display = 'none';
             elements.playerWrapper.style.display = 'block';
             
-            if (isPlayerReady && ytPlayer) {
-                ytPlayer.playVideo();
+            if (isPlayerReady && nativePlayer) {
+                nativePlayer.play();
                 triggerCenterFlash('play');
                 resetControlsTimeout();
             }
         }
 
-        // YouTube Iframe Embedded Framework Integration Vector API
-        function loadYouTubeIframeAPI() {
-            if (window.YT) return; // Already declared/ready validation
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-
-        // Triggers dynamically on iframe package network setup callback completion
-        window.onYouTubeIframeAPIReady = function() {
-            ytPlayer = new YT.Player('yt-iframe', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        };
-
-        function onPlayerReady(event) {
-            isPlayerReady = true;
-            // Map configuration default settings values
-            ytPlayer.setVolume(elements.volSlider.value);
-            startTrackingProgressLoop();
-        }
-
-        function onPlayerStateChange(event) {
-            // YT.PlayerState: UNSTARTED(-1), ENDED(0), PLAYING(1), PAUSED(2), BUFFERING(3), CUED(5)
-            if (event.data === YT.PlayerState.PLAYING) {
-                updatePlayPauseButton(true);
-                resetControlsTimeout();
-            } else if (event.data === YT.PlayerState.PAUSED) {
-                updatePlayPauseButton(false);
-                showControlsBar(); // Keep open when paused for clean ergonomics
-            } else if (event.data === YT.PlayerState.BUFFERING) {
-                // Read frame stream array buffer status matrices
-            }
-        }
-
-        // Continuous Progress Tracking Calculation Engines
         function startTrackingProgressLoop() {
             setInterval(() => {
-                if (!isPlayerReady || !ytPlayer || isCasting) return;
+                if (!isPlayerReady || !nativePlayer || isCasting) return;
                 
-                const current = ytPlayer.getCurrentTime() || 0;
-                const duration = ytPlayer.getDuration() || 0;
-                const loadedFraction = ytPlayer.getVideoLoadedFraction() || 0;
+                const current = nativePlayer.currentTime || 0;
+                const duration = nativePlayer.duration || 0;
+                
+                let bufferedEnd = 0;
+                if (nativePlayer.buffered.length > 0) {
+                    bufferedEnd = nativePlayer.buffered.end(nativePlayer.buffered.length - 1);
+                }
 
-                // Sync time string displays
                 elements.timeLabelLeft.textContent = formatTime(current);
                 elements.timeLabelRight.textContent = formatTime(duration - current);
 
@@ -741,9 +799,9 @@
                     const pct = (current / duration) * 100;
                     elements.progressFill.style.width = `${pct}%`;
                     elements.progressThumb.style.left = `${pct}%`;
-                    elements.progressBuffer.style.width = `${loadedFraction * 100}%`;
+                    elements.progressBuffer.style.width = `${(bufferedEnd / duration) * 100}%`;
                 }
-            }, 350);
+            }, 200);
         }
 
         function formatTime(seconds) {
@@ -752,66 +810,54 @@
             const m = Math.floor((seconds % 3600) / 60);
             const s = Math.floor(seconds % 60);
             const pad = (num) => String(num).padStart(2, '0');
-            
-            if (h > 0) {
-                return `${h}:${pad(m)}:${pad(s)}`;
-            }
-            return `${pad(m)}:${pad(s)}`;
+            return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
         }
 
-        // Audio Output Control Array Matrix Functions
         function handleVolumeSlider(e) {
             const vol = parseInt(e.target.value);
-            if (ytPlayer && isPlayerReady) {
-                ytPlayer.setVolume(vol);
-                if (ytPlayer.isMuted() && vol > 0) {
-                    ytPlayer.unMute();
-                }
+            if (nativePlayer && isPlayerReady) {
+                nativePlayer.volume = vol / 100;
+                nativePlayer.muted = (vol === 0);
             }
-            updateVolumeIcon(vol, false);
+            updateVolumeIcon(vol, vol === 0);
         }
 
         function toggleMuteState() {
-            if (!isPlayerReady || !ytPlayer) return;
-            if (ytPlayer.isMuted()) {
-                ytPlayer.unMute();
-                const currentVol = ytPlayer.getVolume() || 50;
-                elements.volSlider.value = currentVol;
-                updateVolumeIcon(currentVol, false);
-                showToast("Audio Unmuted");
-            } else {
-                ytPlayer.mute();
+            if (!isPlayerReady || !nativePlayer) return;
+            nativePlayer.muted = !nativePlayer.muted;
+            
+            if (nativePlayer.muted) {
                 elements.volSlider.value = 0;
                 updateVolumeIcon(0, true);
                 showToast("Audio Muted");
+            } else {
+                const currentVol = Math.round(nativePlayer.volume * 100) || 50;
+                elements.volSlider.value = currentVol;
+                updateVolumeIcon(currentVol, false);
+                showToast("Audio Unmuted");
             }
         }
 
         function updateVolumeIcon(vol, isMuted) {
             let svgContent = '';
             if (isMuted || vol === 0) {
-                // Mute Icon Vector Array
                 svgContent = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM4 9v6h4l5 5V4L8 9H4zm15.5 3c0 3.12-1.93 5.79-4.7 6.88v2.1c3.89-1.16 6.7-4.75 6.7-9s-2.81-7.84-6.7-9v2.1c2.77 1.09 4.7 3.76 4.7 6.88z" fill="white"/><line x1="3" y1="3" x2="21" y2="21" stroke="white" stroke-width="2"/>';
             } else if (vol < 50) {
-                // Low Volume Vector Array
                 svgContent = '<path d="M14.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z" fill="white"/>';
             } else {
-                // Full Volume Vector Array
                 svgContent = '<path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-3-1.23L6 7H2v10h4l5 5V2zm1.5 10c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="white"/>';
             }
             elements.btnMute.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none">${svgContent}</svg>`;
         }
 
-        // Play/Pause Interactive Translation Layer
         function togglePlayPause() {
-            if (!isPlayerReady || !ytPlayer) return;
-            const state = ytPlayer.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) {
-                ytPlayer.pauseVideo();
-                triggerCenterFlash('pause');
-            } else {
-                ytPlayer.playVideo();
+            if (!isPlayerReady || !nativePlayer) return;
+            if (nativePlayer.paused) {
+                nativePlayer.play();
                 triggerCenterFlash('play');
+            } else {
+                nativePlayer.pause();
+                triggerCenterFlash('pause');
             }
         }
 
@@ -822,22 +868,18 @@
             elements.btnPlayPause.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24">${path}</svg>`;
         }
 
-        // Custom Scrubbing Tracking Logic Engine
         function handleProgressScrub(e) {
-            if (!isPlayerReady || !ytPlayer || isControlsLocked) return;
+            if (!isPlayerReady || !nativePlayer || isControlsLocked) return;
             const rect = elements.progressWrap.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
+            const clickX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
             const percentage = Math.max(0, Math.min(1, clickX / rect.width));
             
-            const duration = ytPlayer.getDuration() || 0;
-            const destinationTime = percentage * duration;
-            
-            ytPlayer.seekTo(destinationTime, true);
-            elements.progressFill.style.width = `${percentage * 100}%`;
-            elements.progressThumb.style.left = `${percentage * 100}%`;
+            const duration = nativePlayer.duration || 0;
+            if (duration > 0) {
+                nativePlayer.currentTime = percentage * duration;
+            }
         }
 
-        // Lock Engine Interactivity Filters
         function toggleInterfaceLock() {
             isControlsLocked = !isControlsLocked;
             if (isControlsLocked) {
@@ -864,7 +906,6 @@
             setTimeout(() => elements.lockToast.classList.remove('show'), 2000);
         }
 
-        // Subtitles Custom Popup Configuration Matrix Selector
         function toggleSubPopup() {
             closeActivePopups(elements.subPopup);
             elements.subPopup.classList.toggle('visible');
@@ -877,22 +918,10 @@
                 row.classList.remove('active');
             });
             event.currentTarget.classList.add('active');
-            
             showToast(`Subtitles set to: ${track.toUpperCase()}`);
             elements.subPopup.classList.remove('visible');
-
-            // Map standard text configuration matrix commands onto YT Iframe payload API array if accessible
-            if (ytPlayer && isPlayerReady) {
-                if (track === 'off') {
-                    ytPlayer.unloadModule("cc");
-                } else {
-                    ytPlayer.loadModule("cc");
-                    ytPlayer.setOption("cc", "track", { "languageCode": track });
-                }
-            }
         }
 
-        // ── Google Chromecast Infrastructure Integration Suite Matrix ──
         function initCastFramework() {
             window.__onGCastApiAvailable = function(isAvailable) {
                 if (isAvailable && window.cast) {
@@ -901,8 +930,6 @@
                         receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
                         autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
                     });
-                    
-                    castContext.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, handleCastSessionChange);
                 }
             };
         }
@@ -911,57 +938,30 @@
             closeActivePopups(elements.castPopup);
             elements.castPopup.classList.toggle('visible');
             trackActivePopup(elements.castPopup);
-            
             if (elements.castPopup.classList.contains('visible')) {
                 renderMockCastDevices();
             }
         }
 
         function renderMockCastDevices() {
-            // Evaluates real hardware stack or initializes custom framework interfaces
-            if (castContext && castContext.getCurrentSession()) {
-                elements.castDeviceList.innerHTML = `<div class="popup-row active" onclick="disconnectFromChromecast()">Disconnect from CyberCast Device</div>`;
-                elements.castStatusText.textContent = "Connected to TV Engine System Alpha";
-            } else {
-                elements.castDeviceList.innerHTML = `
-                    <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div>
-                    <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>
-                `;
-                elements.castStatusText.textContent = "Select target cast asset vector link";
-            }
+            elements.castDeviceList.innerHTML = `
+                <div class="popup-row" onclick="connectToMockDevice('Living Room TV')">Living Room Display Screen</div>
+                <div class="popup-row" onclick="connectToMockDevice('Cyber Deck Screen')">Cybernetic Deck Matrix Terminal</div>
+            `;
+            elements.castStatusText.textContent = "Select target cast asset vector link";
         }
 
         function connectToMockDevice(deviceName) {
             isCasting = true;
             elements.btnCast.classList.add('casting');
             elements.castPopup.classList.remove('visible');
-            if (ytPlayer && isPlayerReady) ytPlayer.pauseVideo();
+            if (nativePlayer && isPlayerReady) nativePlayer.pause();
             showToast(`Casting connection initialized -> ${deviceName}`);
         }
 
-        function disconnectFromChromecast() {
-            isCasting = false;
-            elements.btnCast.classList.remove('casting');
-            elements.castPopup.classList.remove('visible');
-            showToast("Disconnected from Remote Output Display Asset");
-        }
-
-        function handleCastSessionChange(e) {
-            // Native Chromecast Hardware Hook Interface Bridge Arrays
-            if (e.sessionState === cast.framework.SessionState.SESSION_STARTED) {
-                isCasting = true;
-                elements.btnCast.classList.add('casting');
-            } else if (e.sessionState === cast.framework.SessionState.SESSION_ENDED) {
-                isCasting = false;
-                elements.btnCast.classList.remove('casting');
-            }
-        }
-
-        // UI Event Interactivity Engine Utilities
         function trackActivePopup(pop) {
             activePopup = pop.classList.contains('visible') ? pop : null;
         }
-
         function closeActivePopups(exclude = null) {
             if (activePopup && activePopup !== exclude) {
                 activePopup.classList.remove('visible');
@@ -975,7 +975,6 @@
             setTimeout(() => { elements.toast.style.opacity = '0'; }, 3000);
         }
 
-        // Custom UI Gestures (Double Tap to Seek / Single Tap for Menu Matrix Tracking)
         let lastTapTimestamp = 0;
         function handleOverlayClickGesture(e) {
             if (isControlsLocked) {
@@ -987,21 +986,19 @@
             const timestamp = new Date().getTime();
             const tapDelay = timestamp - lastTapTimestamp;
             const containerWidth = elements.videoContainer.clientWidth;
-            const clickX = e.clientX - elements.videoContainer.getBoundingClientRect().left;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clickX = clientX - elements.videoContainer.getBoundingClientRect().left;
 
-            if (tapDelay < 300 &&             tapDelay > 0) {
-                // Evaluated as Double Tap Gesture Sequence Array
+            if (tapDelay < 300 && tapDelay > 0) {
                 if (clickX < containerWidth / 2) {
                     performDoubleTapSeek('left');
                 } else {
                     performDoubleTapSeek('right');
                 }
-                lastTapTimestamp = 0; // Reset matrix cache execution configuration
+                lastTapTimestamp = 0;
             } else {
-                // Single Tap Event Layer execution path
                 lastTapTimestamp = timestamp;
                 setTimeout(() => {
-                    // Validation configuration confirmation pattern filter arrays
                     if (lastTapTimestamp === timestamp) {
                         toggleControlsBarVisibility();
                     }
@@ -1010,14 +1007,13 @@
         }
 
         function performDoubleTapSeek(direction) {
-            if (!isPlayerReady || !ytPlayer) return;
-            const currentTime = ytPlayer.getCurrentTime() || 0;
-            
+            if (!isPlayerReady || !nativePlayer) return;
+            const currentTime = nativePlayer.currentTime || 0;
             if (direction === 'left') {
-                ytPlayer.seekTo(Math.max(0, currentTime - 10), true);
+                nativePlayer.currentTime = Math.max(0, currentTime - 10);
                 animateSeekFlash(elements.flashLeft);
             } else {
-                ytPlayer.seekTo(Math.min(ytPlayer.getDuration(), currentTime + 10), true);
+                nativePlayer.currentTime = Math.min(nativePlayer.duration, currentTime + 10);
                 animateSeekFlash(elements.flashRight);
             }
         }
@@ -1039,7 +1035,6 @@
             setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
         }
 
-        // HUD Interface Canvas Controller Layer Hide and Show Management Array
         function toggleControlsBarVisibility() {
             if (elements.videoContainer.classList.contains('controls-hidden')) {
                 showControlsBar();
@@ -1054,7 +1049,7 @@
         }
 
         function hideControlsBar() {
-            if (isPlayerReady && ytPlayer && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+            if (isPlayerReady && nativePlayer && !nativePlayer.paused) {
                 elements.videoContainer.classList.add('controls-hidden');
                 closeActivePopups();
             }
@@ -1071,30 +1066,36 @@
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 elements.playerWrapper.requestFullscreen().catch(err => {
-                    showToast("Error establishing fullscreen pipeline environment");
+                    showToast("Error establishing fullscreen environment");
                 });
             } else {
                 document.exitFullscreen();
             }
         }
 
-        // Static Event Registration Suite
         function setupInteractiveEventListeners() {
             elements.clickOverlay.addEventListener('click', handleOverlayClickGesture);
             elements.volSlider.addEventListener('input', handleVolumeSlider);
             
-            // Scrubbing input control arrays
             let isDraggingScrub = false;
-            elements.progressWrap.addEventListener('mousedown', (e) => {
+            
+            const startScrub = (e) => {
                 isDraggingScrub = true;
                 handleProgressScrub(e);
-            });
-            window.addEventListener('mousemove', (e) => {
+            };
+            const moveScrub = (e) => {
                 if (isDraggingScrub) handleProgressScrub(e);
-            });
-            window.addEventListener('mouseup', () => { isDraggingScrub = false; });
+            };
+            const endScrub = () => { isDraggingScrub = false; };
 
-            // Keyboard Shortcuts Framework Vector
+            elements.progressWrap.addEventListener('mousedown', startScrub);
+            window.addEventListener('mousemove', moveScrub);
+            window.addEventListener('mouseup', endScrub);
+
+            elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
+            window.addEventListener('touchmove', moveScrub, {passive: true});
+            window.addEventListener('touchend', endScrub);
+
             window.addEventListener('keydown', (e) => {
                 if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
                 if (isControlsLocked && e.key !== 'l' && e.key !== 'L') return;
