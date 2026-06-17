@@ -62,19 +62,37 @@ const elements = {
 
 // Initialize Portal and Local Player Environment
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. INSTANT LOADING FIX: Set immediate local fallbacks so the UI renders without waiting
+    elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
+    elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
+    elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
+    elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
+    
+    // Drop the blocker immediately so the page never freezes on "connecting"
+    if (elements.loadingPanel) elements.loadingPanel.style.display = 'none';
+    if (elements.animeCard) elements.animeCard.style.display = 'block';
+
+    // Trigger onboarding tutorial overlay shortly after visual stability
+    setTimeout(() => {
+        if (elements.tutOverlay) elements.tutOverlay.style.display = 'flex';
+    }, 800);
+
+    // 2. RUN NETWORK STREAMS ASYNCHRONOUSLY
     fetchAnimeMetadata();
     initNativePlayer();
     initCastFramework();
     setupInteractiveEventListeners();
 });
 
-// Fetches asset metrics with a built-in strict network timeout guard link
+// Fetches asset metrics and pulls a randomized background from the top anime listings
 async function fetchAnimeMetadata() {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5 Second maximum threshold
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Safe 3-second absolute threshold
 
     try {
-        const response = await fetch(`https://api.jikan.moe/v4/anime/${TARGET_ANIME_ID}`, {
+        // Query a random page out of the top anime list to vary backgrounds
+        const randomPage = Math.floor(Math.random() * 5) + 1;
+        const response = await fetch(`https://api.jikan.moe/v4/top/anime?page=${randomPage}&limit=10`, {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -82,29 +100,25 @@ async function fetchAnimeMetadata() {
         if (!response.ok) throw new Error('Network pipeline stream asset error');
         const { data } = await response.json();
 
-        elements.apiImage.src = data.images.jpg.large_image_url;
-        elements.cardTitle.textContent = data.title;
-        elements.subpageTitle.textContent = data.title;
-        elements.playerTitle.textContent = data.title;
+        if (data && data.length > 0) {
+            // Pick a random index item from our fetched dataset array
+            const randomIndex = Math.floor(Math.random() * data.length);
+            const randomAnime = data[randomIndex];
+            
+            // Extract the high-res image URL vector link
+            const newBgUrl = randomAnime.images.jpg.large_image_url;
 
+            // Apply the randomized image directly to your background canvas element
+            if (elements.homepageBg) {
+                elements.homepageBg.style.backgroundImage = `url('${newBgUrl}')`;
+                elements.homepageBg.style.backgroundSize = 'cover';
+                elements.homepageBg.style.backgroundPosition = 'center';
+            }
+            console.log(`Successfully mapped randomized background matrix: ${randomAnime.title}`);
+        }
     } catch (err) {
         clearTimeout(timeoutId);
-        console.warn("API gateway timed out or blocked request. Initializing structural offline fallbacks...", err);
-        
-        // Static local configurations bypasses API downtime
-        elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
-        elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
-        elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
-        elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
-    } finally {
-        // Ensures the panel is dropped cleanly regardless of server conditions
-        elements.loadingPanel.style.display = 'none';
-        elements.animeCard.style.display = 'block';
-        
-        // Trigger onboarding walkthrough interface sequence
-        setTimeout(() => {
-            if(elements.tutOverlay) elements.tutOverlay.style.display = 'flex';
-        }, 800);
+        console.warn("Jikan API rate limit hit or pipeline closed. Keeping base layout visuals intact.", err);
     }
 }
 
@@ -492,6 +506,7 @@ function triggerCenterFlash(type) {
     setTimeout(() => elements.centerFlash.classList.remove('show'), 500);
 }
 
+// Controls visibility layers state modifications
 function toggleControlsBarVisibility() {
     if (elements.videoContainer.classList.contains('controls-hidden')) {
         showControlsBar();
@@ -515,8 +530,7 @@ function hideControlsBar() {
 function resetControlsTimeout() {
     clearTimeout(controlsTimeout);
     if (isControlsLocked) return;
-    controlsTimeout = setTimeout(() => {
-        hideControlsBar();
+    controlsTimeout = setTimeout(() =>        hideControlsBar();
     }, 3500);
 }
 
@@ -545,7 +559,7 @@ function setupInteractiveEventListeners() {
     const moveScrub = (e) => {
         if (isDraggingScrub) handleProgressScrub(e);
     };
-    const endScrub = () => { isDraggingS    const endScrub = () => { isDraggingScrub = false; };
+    const endScrub = () => { isDraggingScrub = false; };
 
     elements.progressWrap.addEventListener('mousedown', startScrub);
     window.addEventListener('mousemove', moveScrub);
