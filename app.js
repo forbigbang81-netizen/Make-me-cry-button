@@ -14,6 +14,7 @@ let tutorialStep = 0;
 
 // Document Object Model Element Array Mapping 
 const elements = {
+    homepageBg: document.getElementById('homepage-bg'),
     loadingPanel: document.getElementById('loading-panel'),
     animeCard: document.getElementById('anime-card'),
     apiImage: document.getElementById('api-image'),
@@ -55,7 +56,8 @@ const elements = {
     tutOverlay: document.getElementById('tutorialOverlay'),
     tutPrompt: document.getElementById('tutorialPrompt'),
     tutBubble: document.getElementById('tutorialBubble'),
-    tutText: document.getElementById('tutorialText')
+    tutText: document.getElementById('tutorialText'),
+    tutSkipBtn: document.getElementById('tutorialSkip')
 };
 
 // Initialize Portal and Local Player Environment
@@ -100,7 +102,6 @@ async function fetchAnimeMetadata() {
 }
 
 /* Handles initial Yes/No choices for onboarding walkthrough */
-// Modified to set block configuration layouts correctly
 function handleTutorialChoice(wantsTutorial) {
     elements.tutPrompt.style.display = 'none';
     if (wantsTutorial) {
@@ -115,23 +116,39 @@ function startTutorialSequence() {
     tutorialStep = 1;
     elements.tutBubble.style.display = 'block';
     elements.tutText.textContent = "Click the card";
-    positionTutorialBubbleAboveScreen();
+    
+    // Hide the skip button entirely during the first instruction step
+    elements.tutSkipBtn.style.display = 'none';
+    
+    positionTutorialBubble();
     elements.animeCard.classList.add('tutorial-spotlight');
 }
 
-// Places the tutorial box near the middle, right above the card or subpage layout bounds
-function positionTutorialBubbleAboveScreen() {
-    const bubbleWidth = 280;
-    const windowWidth = window.innerWidth;
-    
-    // Centered horizontally on the viewport canvas screen
-    let left = (windowWidth / 2) - (bubbleWidth / 2);
-    if (left < 10) left = 10;
+// Places the tutorial box perfectly aligned with target interface nodes
+function positionTutorialBubble() {
+    if (tutorialStep === 1) {
+        // Attaches the prompt precisely above the top edge bounding border of the card
+        const cardRect = elements.animeCard.getBoundingClientRect();
+        const bubbleWidth = 280;
+        
+        let left = cardRect.left + (cardRect.width / 2) - (bubbleWidth / 2);
+        let top = cardRect.top - 70; // Positioned directly above screen container card asset
 
-    let top = 60; // Standard layout gap margin near the top-middle segment
+        // Screen boundary safety logic
+        if (left < 10) left = 10;
+        if (top < 10) top = 10;
 
-    elements.tutBubble.style.top = `${top}px`;
-    elements.tutBubble.style.left = `${left}px`;
+        elements.tutBubble.style.top = `${top + window.scrollY}px`;
+        elements.tutBubble.style.left = `${left}px`;
+    } else if (tutorialStep === 2) {
+        // Keeps near top middle segment for detail view layout
+        const bubbleWidth = 280;
+        let left = (window.innerWidth / 2) - (bubbleWidth / 2);
+        if (left < 10) left = 10;
+        
+        elements.tutBubble.style.top = `75px`;
+        elements.tutBubble.style.left = `${left}px`;
+    }
 }
 
 function terminateTutorial() {
@@ -164,15 +181,20 @@ function initNativePlayer() {
 function openSubpage() {
     elements.subpage.style.display = 'block';
     document.body.style.overflow = 'hidden';
+    
+    // Turn off/fade homepage animated background stream when viewing video player subpage
+    if (elements.homepageBg) elements.homepageBg.style.opacity = '0';
 
     if (tutorialStep === 1) {
         elements.animeCard.classList.remove('tutorial-spotlight');
         tutorialStep = 2;
         elements.tutText.textContent = "Click make me cry button and cry!";
         
-        // Keeps the box in its constant accessible near-middle top space position
+        // Bring back the skip button for step 2 if needed
+        elements.tutSkipBtn.style.display = 'inline-block';
+        
         setTimeout(() => {
-            positionTutorialBubbleAboveScreen();
+            positionTutorialBubble();
             elements.cryActionBtn.classList.add('tutorial-spotlight');
         }, 350);
     }
@@ -187,6 +209,10 @@ function closeSubpage() {
     elements.cryActionBtn.style.display = 'inline-block';
     elements.subpage.style.display = 'none';
     document.body.style.overflow = 'auto';
+    
+    // Restore background animation loops
+    if (elements.homepageBg) elements.homepageBg.style.opacity = '0.35';
+    
     if (tutorialStep > 0) terminateTutorial();
 }
 
@@ -309,6 +335,7 @@ function handleProgressScrub(e) {
     }
 }
 
+// Controls Lock State Management Mapping
 function toggleInterfaceLock() {
     isControlsLocked = !isControlsLocked;
     if (isControlsLocked) {
@@ -510,6 +537,7 @@ function setupInteractiveEventListeners() {
     let isDraggingScrub = false;
     
     const startScrub = (e) => {
+        if (isControlsLocked) return;
         isDraggingScrub = true;
         handleProgressScrub(e);
     };
@@ -518,48 +546,4 @@ function setupInteractiveEventListeners() {
     };
     const endScrub = () => { isDraggingScrub = false; };
 
-    elements.progressWrap.addEventListener('mousedown', startScrub);
-    window.addEventListener('mousemove', moveScrub);
-    window.addEventListener('mouseup', endScrub);
-
-    elements.progressWrap.addEventListener('touchstart', startScrub, {passive: true});
-    window.addEventListener('touchmove', moveScrub, {passive: true});
-    window.addEventListener('touchend', endScrub);
-
-    // Responsive window resize recalculation matrix tracking
-    window.addEventListener('resize', () => {
-        if (tutorialStep > 0) positionTutorialBubbleAboveScreen();
-    });
-
-    window.addEventListener('keydown', (e) => {
-        if (elements.subpage.style.display !== 'block' || elements.playerWrapper.style.display !== 'block') return;
-        if (isControlsLocked && e.key !== 'l' && e.key !== 'L') return;
-
-        switch(e.key.toLowerCase()) {
-            case ' ':
-                e.preventDefault();
-                togglePlayPause();
-                break;
-            case 'f':
-                toggleFullscreen();
-                break;
-            case 'm':
-                toggleMuteState();
-                break;
-            case 'm':
-                toggleMuteState();
-                break;
-            case 'l':
-                toggleInterfaceLock();
-                break;
-            case 'arrowleft':
-                performDoubleTapSeek('left');
-                showControlsBar();
-                break;
-            case 'arrowright':
-                performDoubleTapSeek('right');
-                showControlsBar();
-                break;
-        }
-    });
-}
+ 
