@@ -6,9 +6,11 @@ let isControlsLocked = false;
 let controlsTimeout = null;
 let activePopup = null;
 let currentSubtitleTrack = 'off';
-
 let castContext = null;
 let isCasting = false;
+
+// Tutorial State Metrics
+let tutorialStep = 0;
 
 // Document Object Model Element Array Mapping 
 const elements = {
@@ -49,7 +51,10 @@ const elements = {
     centerFlash: document.getElementById('centerFlash'),
     cfPlay: document.getElementById('cfPlay'),
     cfPause: document.getElementById('cfPause'),
-    toast: document.getElementById('toast')
+    toast: document.getElementById('toast'),
+    tutOverlay: document.getElementById('tutorialOverlay'),
+    tutBubble: document.getElementById('tutorialBubble'),
+    tutText: document.getElementById('tutorialText')
 };
 
 // Initialize Portal and Local Player Environment
@@ -74,6 +79,9 @@ async function fetchAnimeMetadata() {
 
         elements.loadingPanel.style.display = 'none';
         elements.animeCard.style.display = 'block';
+        
+        // Initialize Onboarding Guide
+        setTimeout(startTutorialSequence, 800);
     } catch (err) {
         console.error("API error, switching to offline fallback: ", err);
         elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
@@ -81,7 +89,44 @@ async function fetchAnimeMetadata() {
         elements.cardDesc.textContent = "A street kid trying to survive in Night City—a technology and body modification-obsessed city of the future.";
         elements.loadingPanel.style.display = 'none';
         elements.animeCard.style.display = 'block';
+        
+        setTimeout(startTutorialSequence, 800);
     }
+}
+
+/* Interactive Tutorial Workflow Engine */
+function startTutorialSequence() {
+    tutorialStep = 1;
+    elements.tutOverlay.style.display = 'block';
+    positionTutorialBubble(elements.animeCard, 'bottom');
+    elements.animeCard.classList.add('tutorial-spotlight');
+}
+
+function positionTutorialBubble(targetEl, preferredPosition) {
+    if (!targetEl) return;
+    const rect = targetEl.getBoundingClientRect();
+    
+    let top = 0;
+    let left = rect.left + (rect.width / 2) - 140;
+
+    if (preferredPosition === 'bottom') {
+        top = rect.bottom + window.scrollY + 15;
+    } else { 
+        top = rect.top + window.scrollY - 135; 
+    }
+
+    if (left < 10) left = 10;
+    if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+
+    elements.tutBubble.style.top = `${top}px`;
+    elements.tutBubble.style.left = `${left}px`;
+}
+
+function terminateTutorial() {
+    tutorialStep = 0;
+    elements.tutOverlay.style.display = 'none';
+    elements.animeCard.classList.remove('tutorial-spotlight');
+    elements.cryActionBtn.classList.remove('tutorial-spotlight');
 }
 
 function initNativePlayer() {
@@ -105,6 +150,16 @@ function initNativePlayer() {
 function openSubpage() {
     elements.subpage.style.display = 'block';
     document.body.style.overflow = 'hidden';
+
+    if (tutorialStep === 1) {
+        elements.animeCard.classList.remove('tutorial-spotlight');
+        tutorialStep = 2;
+        elements.tutText.textContent = "Boom! Now click 'Make Me Cry' to stream the matrix transmission.";
+        setTimeout(() => {
+            positionTutorialBubble(elements.cryActionBtn, 'top');
+            elements.cryActionBtn.classList.add('tutorial-spotlight');
+        }, 350);
+    }
 }
 
 function closeSubpage() {
@@ -116,6 +171,7 @@ function closeSubpage() {
     elements.cryActionBtn.style.display = 'inline-block';
     elements.subpage.style.display = 'none';
     document.body.style.overflow = 'auto';
+    if (tutorialStep > 0) terminateTutorial();
 }
 
 function playCleanVideo() {
@@ -126,6 +182,14 @@ function playCleanVideo() {
         nativePlayer.play();
         triggerCenterFlash('play');
         resetControlsTimeout();
+    }
+
+    if (tutorialStep === 2) {
+        elements.cryActionBtn.classList.remove('tutorial-spotlight');
+        terminateTutorial();
+        setTimeout(() => {
+            showToast("🎉 Tutorial Completed Successfully!");
+        }, 500);
     }
 }
 
@@ -319,6 +383,7 @@ function closeActivePopups(exclude = null) {
     }
 }
 
+// Global Notification Toast Function
 function showToast(msg) {
     elements.toast.textContent = msg;
     elements.toast.style.opacity = '1';
@@ -344,7 +409,7 @@ function handleOverlayClickGesture(e) {
             performDoubleTapSeek('left');
         } else {
             performDoubleTapSeek('right');
-                }
+        }
         lastTapTimestamp = 0;
     } else {
         lastTapTimestamp = timestamp;
