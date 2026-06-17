@@ -11,6 +11,7 @@ var isPlaying        = false;
 var progressInterval = null;
 var volLevel         = 80;   /* 0-100, step 10 via buttons */
 var PIP_COUNT        = 10;
+var isFullscreen     = false;
 
 /* ── Load YT IFrame API ──────────────────── */
 function loadYTAPI() {
@@ -104,7 +105,6 @@ function renderPips() {
   var wrap = document.getElementById('volPips');
   if (!wrap) return;
 
-  /* Build pips if empty */
   if (wrap.children.length === 0) {
     for (var i = 0; i < PIP_COUNT; i++) {
       var pip = document.createElement('div');
@@ -138,11 +138,18 @@ function enterFullscreen() {
   else if (vc.mozRequestFullScreen)    vc.mozRequestFullScreen();
 }
 
+function exitFullscreen() {
+  if (document.exitFullscreen)            document.exitFullscreen();
+  else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  else if (document.mozCancelFullScreen)  document.mozCancelFullScreen();
+}
+
 function lockLandscape() {
   if (screen.orientation && screen.orientation.lock) {
     screen.orientation.lock('landscape').then(function(){}).catch(function(){});
   }
 }
+
 function unlockOrientation() {
   if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
 }
@@ -150,8 +157,59 @@ function unlockOrientation() {
 function onFsChange() {
   var vc  = document.getElementById('videoContainer');
   var fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-  if (fsEl === vc) { lockLandscape(); }
-  else { unlockOrientation(); }
+  
+  if (fsEl === vc) { 
+    isFullscreen = true;
+    lockLandscape();
+    createFsExitOverlay();
+  } else { 
+    isFullscreen = false;
+    unlockOrientation();
+    removeFsExitOverlay();
+  }
+}
+
+/* ── Fullscreen exit overlay (click anywhere to exit) ─── */
+function createFsExitOverlay() {
+  var existing = document.getElementById('fsExitOverlay');
+  if (existing) return;
+  
+  var overlay = document.createElement('div');
+  overlay.id = 'fsExitOverlay';
+  overlay.className = 'fs-exit-overlay';
+  overlay.onclick = exitFullscreen;
+  
+  var vc = document.getElementById('videoContainer');
+  if (vc) {
+    vc.parentNode.appendChild(overlay);
+  }
+}
+
+function removeFsExitOverlay() {
+  var overlay = document.getElementById('fsExitOverlay');
+  if (overlay) overlay.remove();
+}
+
+/* ── Block YouTube's native UI overlay ───── */
+function createYTBlocker() {
+  var blocker = document.getElementById('ytBlocker');
+  if (blocker) return;
+  
+  blocker = document.createElement('div');
+  blocker.id = 'ytBlocker';
+  blocker.className = 'yt-blocker';
+  
+  var vc = document.getElementById('videoContainer');
+  if (vc) {
+    vc.appendChild(blocker);
+  }
+}
+
+/* ── Keyboard handler for fullscreen exit ── */
+function handleKeyDown(e) {
+  if (e.key === 'Escape' && isFullscreen) {
+    exitFullscreen();
+  }
 }
 
 /* ── Bind controls ───────────────────────── */
@@ -194,9 +252,7 @@ function bindControls() {
       if (!isFs) {
         enterFullscreen();
       } else {
-        if (document.exitFullscreen)            document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.mozCancelFullScreen)  document.mozCancelFullScreen();
+        exitFullscreen();
       }
     };
   }
@@ -205,6 +261,9 @@ function bindControls() {
   document.addEventListener('fullscreenchange',       onFsChange);
   document.addEventListener('webkitfullscreenchange', onFsChange);
   document.addEventListener('mozfullscreenchange',    onFsChange);
+  
+  /* Keyboard listener for ESC key */
+  document.addEventListener('keydown', handleKeyDown);
 }
 
 /* ── Init ────────────────────────────────── */
@@ -212,6 +271,7 @@ function initPlayer() {
   loadYTAPI();
   bindControls();
   renderPips();
+  createYTBlocker();
 }
 
 if (document.readyState === 'loading') {
