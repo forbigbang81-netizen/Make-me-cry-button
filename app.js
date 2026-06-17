@@ -54,7 +54,8 @@ const elements = {
     toast: document.getElementById('toast'),
     tutOverlay: document.getElementById('tutorialOverlay'),
     tutBubble: document.getElementById('tutorialBubble'),
-    tutText: document.getElementById('tutorialText')
+    tutText: document.getElementById('tutorialText'),
+    tutArrow: document.getElementById('tutorialArrow')
 };
 
 // Initialize Portal and Local Player Environment
@@ -111,8 +112,10 @@ function positionTutorialBubble(targetEl, preferredPosition) {
 
     if (preferredPosition === 'bottom') {
         top = rect.bottom + window.scrollY + 15;
+        elements.tutArrow.textContent = "👆"; // Flip arrow upwards when bubble drops below targets
     } else { 
         top = rect.top + window.scrollY - 135; 
+        elements.tutArrow.textContent = "👇"; // Point downwards when bubble floats above targets
     }
 
     if (left < 10) left = 10;
@@ -263,6 +266,7 @@ function updateVolumeIcon(vol, isMuted) {
     elements.btnMute.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none">${svgContent}</svg>`;
 }
 
+// Controls standard pause/play functionality
 function togglePlayPause() {
     if (!isPlayerReady || !nativePlayer) return;
     if (nativePlayer.paused) {
@@ -458,6 +462,7 @@ function toggleControlsBarVisibility() {
     }
 }
 
+// Forces controls layout layer context to build visibly
 function showControlsBar() {
     elements.videoContainer.classList.remove('controls-hidden');
     resetControlsTimeout();
