@@ -62,22 +62,37 @@ const elements = {
 
 // Initialize Portal and Local Player Environment
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. INSTANT LOADING FIX: Set immediate local fallbacks so the UI renders without waiting
+    // 1. INSTANT LOADING & PURGE STUCK TEXT
+    // Kill the visual blocking panel immediately so it cannot trap the interface
+    if (elements.loadingPanel) {
+        elements.loadingPanel.style.display = 'none';
+        elements.loadingPanel.style.opacity = '0';
+        elements.loadingPanel.style.pointerEvents = 'none';
+    }
+
+    // Scan for and eliminate any raw lingering text nodes saying "Connecting to database..."
+    const textNodes = document.querySelectorAll('div, p, span');
+    textNodes.forEach(el => {
+        if (el.textContent && el.textContent.includes('Connecting to database')) {
+            el.style.display = 'none';
+        }
+    });
+
+    // Bring up the primary content card frame automatically
+    if (elements.animeCard) elements.animeCard.style.display = 'block';
+
+    // Seed robust initial UI visuals instantly while network requests resolve
     elements.apiImage.src = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500";
     elements.cardTitle.textContent = "Cyberpunk: Edgerunners";
     elements.subpageTitle.textContent = "Cyberpunk: Edgerunners";
     elements.playerTitle.textContent = "Cyberpunk: Edgerunners";
-    
-    // Drop the blocker immediately so the page never freezes on "connecting"
-    if (elements.loadingPanel) elements.loadingPanel.style.display = 'none';
-    if (elements.animeCard) elements.animeCard.style.display = 'block';
 
-    // Trigger onboarding tutorial overlay shortly after visual stability
+    // Launch onboarding UI sequencing after window configuration stabilizes
     setTimeout(() => {
         if (elements.tutOverlay) elements.tutOverlay.style.display = 'flex';
     }, 800);
 
-    // 2. RUN NETWORK STREAMS ASYNCHRONOUSLY
+    // 2. DISPATCH BACKGROUND ASYNC CORE OPERATIONS
     fetchAnimeMetadata();
     initNativePlayer();
     initCastFramework();
@@ -87,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Fetches asset metrics and pulls a randomized background from the top anime listings
 async function fetchAnimeMetadata() {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // Safe 3-second absolute threshold
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 Second total abort threshold
 
     try {
         // Query a random page out of the top anime list to vary backgrounds
@@ -290,6 +305,7 @@ function handleVolumeSlider(e) {
     updateVolumeIcon(vol, vol === 0);
 }
 
+// Controls visual states modifications for muting audio elements
 function toggleMuteState() {
     if (!isPlayerReady || !nativePlayer) return;
     nativePlayer.muted = !nativePlayer.muted;
@@ -530,7 +546,8 @@ function hideControlsBar() {
 function resetControlsTimeout() {
     clearTimeout(controlsTimeout);
     if (isControlsLocked) return;
-    controlsTimeout = setTimeout(() =>        hideControlsBar();
+    controlsTimeout = setTimeout(() => {
+        hideControlsBar();
     }, 3500);
 }
 
