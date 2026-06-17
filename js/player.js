@@ -1,22 +1,25 @@
 /* ═══════════════════════════════════════════
    PLAYER.JS — Custom YouTube player controller
-   PS browser compatible: no async/await,
-   no optional chaining, XHR-safe
+   PS browser compatible.
+   onDetailReady() called by detail.js to
+   trigger play + fullscreen after gate.
 ═══════════════════════════════════════════ */
 
 var ytPlayer         = null;
+var ytReady          = false;
 var isPlaying        = false;
 var progressInterval = null;
+var volLevel         = 80;   /* 0-100, step 10 via buttons */
+var PIP_COUNT        = 10;
 
 /* ── Load YT IFrame API ──────────────────── */
 function loadYTAPI() {
-  var tag  = document.createElement('script');
-  tag.src  = 'https://www.youtube.com/iframe_api';
+  var tag   = document.createElement('script');
+  tag.src   = 'https://www.youtube.com/iframe_api';
   var first = document.getElementsByTagName('script')[0];
   first.parentNode.insertBefore(tag, first);
 }
 
-/* ── Called by YT when API is ready ─────── */
 window.onYouTubeIframeAPIReady = function () {
   ytPlayer = new YT.Player('ytPlayer', {
     events: {
@@ -26,27 +29,40 @@ window.onYouTubeIframeAPIReady = function () {
   });
 };
 
-function onPlayerReady(event) {
-  var slider = document.getElementById('volumeSlider');
-  if (slider && ytPlayer && ytPlayer.getVolume) {
-    slider.value = ytPlayer.getVolume();
-  }
+function onPlayerReady() {
+  ytReady = true;
+  ytPlayer.setVolume(volLevel);
+  renderPips();
 }
 
 function onPlayerStateChange(event) {
-  var playIcon = document.getElementById('playIcon');
-  var overlay  = document.getElementById('videoOverlay');
+  var pbBtn  = document.getElementById('playPauseBtn');
+  var status = document.getElementById('titlebarStatus');
 
   if (event.data === YT.PlayerState.PLAYING) {
     isPlaying = true;
-    if (playIcon) playIcon.textContent = '\u23F8';
-    if (overlay)  overlay.className = 'video-overlay hidden';
+    if (pbBtn)  { pbBtn.textContent = 'PAUSE'; pbBtn.className = 'ctrl-text-btn active'; }
+    if (status) { status.textContent = 'PLAYING'; status.className = 'titlebar-status playing'; }
     startProgressPoll();
-  } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+  } else {
     isPlaying = false;
-    if (playIcon) playIcon.textContent = '\u25B6';
-    stopProgressPoll();
+    if (pbBtn)  { pbBtn.textContent = 'PLAY'; pbBtn.className = 'ctrl-text-btn'; }
+    if (status) { status.textContent = event.data === YT.PlayerState.ENDED ? 'ENDED' : 'PAUSED'; status.className = 'titlebar-status'; }
+    if (event.data !== YT.PlayerState.BUFFERING) stopProgressPoll();
   }
+}
+
+/* ── Called by detail.js after gate ─────── */
+function onDetailReady() {
+  function tryPlay() {
+    if (ytReady && ytPlayer && ytPlayer.playVideo) {
+      ytPlayer.playVideo();
+      setTimeout(function () { enterFullscreen(); }, 400);
+    } else {
+      setTimeout(tryPlay, 200);
+    }
+  }
+  tryPlay();
 }
 
 /* ── Progress polling ────────────────────── */
@@ -56,163 +72,146 @@ function startProgressPoll() {
 }
 
 function stopProgressPoll() {
-  if (progressInterval) {
-    clearInterval(progressInterval);
-    progressInterval = null;
-  }
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
 }
 
 function updateProgress() {
   if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-
   var current  = ytPlayer.getCurrentTime();
   var duration = ytPlayer.getDuration();
-  var pct      = (duration > 0) ? (current / duration) * 100 : 0;
+  var pct      = duration > 0 ? (current / duration) * 100 : 0;
 
-  var fill    = document.getElementById('progressFill');
-  var thumb   = document.getElementById('progressThumb');
-  var timeCur = document.getElementById('timeCurrent');
-  var timeDur = document.getElementById('timeDuration');
+  var fill  = document.getElementById('scrubberFill');
+  var head  = document.getElementById('scrubberHead');
+  var tCur  = document.getElementById('timeCurrent');
+  var tDur  = document.getElementById('timeDuration');
 
-  if (fill)    fill.style.width  = pct + '%';
-  if (thumb)   thumb.style.left  = pct + '%';
-  if (timeCur) timeCur.textContent = formatTime(current);
-  if (timeDur) timeDur.textContent = formatTime(duration);
+  if (fill) fill.style.width = pct + '%';
+  if (head) head.style.left  = pct + '%';
+  if (tCur) tCur.textContent = fmtTime(current);
+  if (tDur) tDur.textContent = fmtTime(duration);
 }
 
-function formatTime(secs) {
-  if (isNaN(secs) || secs < 0) return '0:00';
-  var m = Math.floor(secs / 60);
-  var s = Math.floor(secs % 60);
-  return m + ':' + (s < 10 ? '0' + s : s);
+function fmtTime(s) {
+  if (isNaN(s) || s < 0) return '0:00';
+  var m = Math.floor(s / 60);
+  var sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
-/* ── Orientation lock ────────────────────── */
+/* ── Volume pips ─────────────────────────── */
+function renderPips() {
+  var wrap = document.getElementById('volPips');
+  if (!wrap) return;
+
+  /* Build pips if empty */
+  if (wrap.children.length === 0) {
+    for (var i = 0; i < PIP_COUNT; i++) {
+      var pip = document.createElement('div');
+      pip.className = 'vol-pip';
+      wrap.appendChild(pip);
+    }
+  }
+
+  var litCount = Math.round((volLevel / 100) * PIP_COUNT);
+  var pips = wrap.children;
+  for (var j = 0; j < PIP_COUNT; j++) {
+    pips[j].className = j < litCount ? 'vol-pip lit' : 'vol-pip';
+  }
+
+  var numEl = document.getElementById('volNum');
+  if (numEl) numEl.textContent = volLevel;
+}
+
+function setVolume(v) {
+  volLevel = Math.max(0, Math.min(100, v));
+  if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(volLevel);
+  renderPips();
+}
+
+/* ── Fullscreen + landscape ──────────────── */
+function enterFullscreen() {
+  var vc = document.getElementById('videoContainer');
+  if (!vc) return;
+  if (vc.requestFullscreen)            vc.requestFullscreen().then(function(){}).catch(function(){});
+  else if (vc.webkitRequestFullscreen) vc.webkitRequestFullscreen();
+  else if (vc.mozRequestFullScreen)    vc.mozRequestFullScreen();
+}
+
 function lockLandscape() {
   if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').then(function () {}).catch(function () {});
+    screen.orientation.lock('landscape').then(function(){}).catch(function(){});
   }
 }
-
 function unlockOrientation() {
-  if (screen.orientation && screen.orientation.unlock) {
-    screen.orientation.unlock();
-  }
+  if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
 }
 
-/* ── Bind all controls ───────────────────── */
+function onFsChange() {
+  var vc  = document.getElementById('videoContainer');
+  var fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+  if (fsEl === vc) { lockLandscape(); }
+  else { unlockOrientation(); }
+}
+
+/* ── Bind controls ───────────────────────── */
 function bindControls() {
-
-  /* Play/Pause button */
-  var playPauseBtn = document.getElementById('playPauseBtn');
-  if (playPauseBtn) {
-    playPauseBtn.onclick = function () {
+  /* Play/Pause */
+  var pbBtn = document.getElementById('playPauseBtn');
+  if (pbBtn) {
+    pbBtn.onclick = function () {
       if (!ytPlayer) return;
-      if (isPlaying) { ytPlayer.pauseVideo(); }
-      else           { ytPlayer.playVideo();  }
+      if (isPlaying) ytPlayer.pauseVideo();
+      else           ytPlayer.playVideo();
     };
   }
 
-  /* Big play overlay button */
-  var bigPlayBtn = document.getElementById('bigPlayBtn');
-  if (bigPlayBtn) {
-    bigPlayBtn.onclick = function () {
-      if (ytPlayer) ytPlayer.playVideo();
-    };
-  }
+  /* Volume buttons */
+  var vd = document.getElementById('volDown');
+  var vu = document.getElementById('volUp');
+  if (vd) vd.onclick = function () { setVolume(volLevel - 10); };
+  if (vu) vu.onclick = function () { setVolume(volLevel + 10); };
 
-  /* Click overlay background to play */
-  var videoOverlay = document.getElementById('videoOverlay');
-  if (videoOverlay) {
-    videoOverlay.onclick = function (e) {
-      if (e.target === videoOverlay && ytPlayer) ytPlayer.playVideo();
-    };
-  }
-
-  /* Mute button */
-  var muteBtn  = document.getElementById('muteBtn');
-  var muteIcon = document.getElementById('muteIcon');
-  if (muteBtn) {
-    muteBtn.onclick = function () {
-      if (!ytPlayer) return;
-      if (ytPlayer.isMuted()) {
-        ytPlayer.unMute();
-        if (muteIcon) muteIcon.textContent = '\uD83D\uDD0A';
-      } else {
-        ytPlayer.mute();
-        if (muteIcon) muteIcon.textContent = '\uD83D\uDD07';
-      }
-    };
-  }
-
-  /* Volume slider */
-  var volumeSlider = document.getElementById('volumeSlider');
-  if (volumeSlider) {
-    volumeSlider.oninput = function () {
-      if (!ytPlayer) return;
-      var vol = Number(volumeSlider.value);
-      ytPlayer.setVolume(vol);
-      var muteIconEl = document.getElementById('muteIcon');
-      if (muteIconEl) muteIconEl.textContent = vol === 0 ? '\uD83D\uDD07' : '\uD83D\uDD0A';
-    };
-  }
-
-  /* Progress bar seek */
-  var progressTrack = document.querySelector('.progress-track');
-  if (progressTrack) {
-    progressTrack.onclick = function (e) {
+  /* Scrubber seek */
+  var track = document.getElementById('scrubberTrack');
+  if (track) {
+    track.onclick = function (e) {
       if (!ytPlayer || !ytPlayer.getDuration) return;
-      var rect = progressTrack.getBoundingClientRect();
+      var rect = track.getBoundingClientRect();
       var pct  = (e.clientX - rect.left) / rect.width;
       ytPlayer.seekTo(pct * ytPlayer.getDuration(), true);
       updateProgress();
     };
   }
 
-  /* Fullscreen + landscape lock */
-  var fullscreenBtn  = document.getElementById('fullscreenBtn');
-  var videoContainer = document.getElementById('videoContainer');
-
-  if (fullscreenBtn && videoContainer) {
-    fullscreenBtn.onclick = function () {
-      if (!document.fullscreenElement) {
-        if (videoContainer.requestFullscreen) {
-          videoContainer.requestFullscreen().then(function () {}).catch(function (err) {
-            console.warn('Fullscreen error:', err);
-          });
-        } else if (videoContainer.webkitRequestFullscreen) {
-          /* Safari / older WebKit */
-          videoContainer.webkitRequestFullscreen();
-        } else if (videoContainer.mozRequestFullScreen) {
-          videoContainer.mozRequestFullScreen();
-        }
+  /* Fullscreen button */
+  var fsBtn = document.getElementById('fullscreenBtn');
+  if (fsBtn) {
+    fsBtn.onclick = function () {
+      var vc = document.getElementById('videoContainer');
+      if (!vc) return;
+      var isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+      if (!isFs) {
+        enterFullscreen();
       } else {
-        if (document.exitFullscreen)       document.exitFullscreen();
+        if (document.exitFullscreen)            document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         else if (document.mozCancelFullScreen)  document.mozCancelFullScreen();
       }
     };
-
-    /* Lock landscape on fullscreen enter, unlock on exit */
-    function onFullscreenChange() {
-      var fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-      if (fsEl === videoContainer) {
-        lockLandscape();
-      } else {
-        unlockOrientation();
-      }
-    }
-
-    document.addEventListener('fullscreenchange',       onFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-    document.addEventListener('mozfullscreenchange',    onFullscreenChange);
   }
+
+  /* Fullscreen change listeners */
+  document.addEventListener('fullscreenchange',       onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  document.addEventListener('mozfullscreenchange',    onFsChange);
 }
 
 /* ── Init ────────────────────────────────── */
 function initPlayer() {
   loadYTAPI();
   bindControls();
+  renderPips();
 }
 
 if (document.readyState === 'loading') {
