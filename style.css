@@ -523,6 +523,19 @@ body {
     z-index: 10000;
 }
 
+/* Animated Pulse Pointer Arrow Element */
+.tutorial-arrow-pointer {
+    font-size: 26px;
+    margin-bottom: 6px;
+    display: inline-block;
+    animation: bounceIndicator 0.6s infinite alternate ease-in-out;
+}
+
+@keyframes bounceIndicator {
+    from { transform: translateY(-4px); }
+    to { transform: translateY(6px); }
+}
+
 .tutorial-bubble p {
     font-size: 14px;
     line-height: 1.4;
