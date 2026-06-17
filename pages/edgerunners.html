@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDGERUNNERS // NIGHT CITY</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/detail.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="back-btn">
+        <span class="back-arrow">◄</span>
+        <span>BACK TO VAULT</span>
+      </a>
+      <div class="logo">
+        <span class="logo-bracket">[</span>
+        <span class="logo-text">NIGHT CITY</span>
+        <span class="logo-bracket">]</span>
+      </div>
+    </div>
+    <div class="header-line"></div>
+  </header>
+
+  <main class="detail-main">
+    <!-- Hero Video Section -->
+    <section class="video-section">
+      <div class="video-label">
+        <span class="blink-dot"></span>
+        NEURAL FEED :: LIVE STREAM
+      </div>
+
+      <div class="player-wrap" id="playerWrap">
+        <div class="player-chrome">
+          <div class="player-chrome-top">
+            <span class="chrome-dot red"></span>
+            <span class="chrome-dot yellow"></span>
+            <span class="chrome-dot green"></span>
+            <span class="chrome-title">EDGERUNNERS_OST_STREAM.mkv</span>
+          </div>
+
+          <div class="video-container" id="videoContainer">
+            <iframe
+              id="ytPlayer"
+              src="https://www.youtube.com/embed/KvMY1uzSC1E?enablejsapi=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&color=white"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              title="Cyberpunk Edgerunners OST"
+            ></iframe>
+            <div class="video-overlay" id="videoOverlay">
+              <button class="play-btn-big" id="bigPlayBtn" aria-label="Play">
+                <span class="play-icon">▶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Custom Controls -->
+          <div class="player-controls" id="playerControls">
+            <div class="progress-bar-wrap" id="progressWrap">
+              <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-thumb" id="progressThumb"></div>
+              </div>
+              <div class="time-stamps">
+                <span id="timeCurrent">0:00</span>
+                <span id="timeDuration">--:--</span>
+              </div>
+            </div>
+
+            <div class="controls-row">
+              <div class="controls-left">
+                <button class="ctrl-btn" id="playPauseBtn" aria-label="Play/Pause">
+                  <span id="playIcon">▶</span>
+                </button>
+                <button class="ctrl-btn" id="muteBtn" aria-label="Mute">
+                  <span id="muteIcon">🔊</span>
+                </button>
+                <div class="volume-wrap">
+                  <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="80" aria-label="Volume" />
+                </div>
+              </div>
+              <div class="controls-right">
+                <span class="quality-tag">4K · DOLBY</span>
+                <button class="ctrl-btn" id="fullscreenBtn" aria-label="Fullscreen">⛶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VHS decorative elements -->
+        <div class="vhs-corner top-left"></div>
+        <div class="vhs-corner top-right"></div>
+        <div class="vhs-corner bottom-left"></div>
+        <div class="vhs-corner bottom-right"></div>
+      </div>
+    </section>
+
+    <!-- Anime Info Section -->
+    <section class="info-section" id="infoSection">
+      <div class="info-grid">
+        <div class="info-poster-col">
+          <div class="poster-wrap">
+            <img id="animePoster" src="" alt="Cyberpunk Edgerunners Poster" />
+            <div class="poster-glitch-bar"></div>
+          </div>
+        </div>
+
+        <div class="info-content-col">
+          <div class="series-eyebrow">CLASSIFIED FILE :: MAL_ID #42310</div>
+          <h1 class="series-title" id="seriesTitle">CYBERPUNK: EDGERUNNERS</h1>
+          <div class="series-meta" id="seriesMeta">
+            <span class="meta-tag" id="metaEps">— EPS</span>
+            <span class="meta-tag" id="metaScore">— SCORE</span>
+            <span class="meta-tag" id="metaYear">— YEAR</span>
+            <span class="meta-tag" id="metaStudio">— STUDIO</span>
+          </div>
+          <p class="series-synopsis" id="seriesSynopsis">Loading neural feed...</p>
+
+          <!-- THE CRY BUTTON -->
+          <div class="cry-section">
+            <div class="cry-label">// EMOTIONAL_OVERRIDE.exe</div>
+            <button class="cry-btn" id="cryBtn">
+              <span class="cry-btn-text">MAKE ME CRY</span>
+              <span class="cry-btn-sub">[ INITIATE FEEL PROTOCOL ]</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cry modal -->
+    <div class="cry-modal" id="cryModal">
+      <div class="cry-modal-inner">
+        <button class="modal-close" id="modalClose">✕</button>
+        <div class="modal-content" id="modalContent">
+          <!-- injected by JS -->
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+  </main>
+
+  <script src="../js/player.js"></script>
+  <script src="../js/detail.js"></script>
+</body>
+</html>
